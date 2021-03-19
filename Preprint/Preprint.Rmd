@@ -1,0 +1,326 @@
+---
+title: "Economies of scale: Larger vaccination distribution hubs are more resiliant to service disruptions"
+authors:
+  - name: Mark Hanly
+    department: Centre for Big Data Research in Health
+    affiliation: UNSW Sydney
+    email: m.hanly@unsw.edu.au
+  - name: Tim Churches
+    department: South Western Sydney Clinical School, Faculty of Medicine & Health, UNSW Sydney &
+    affiliation: Ingham Institute for Applied Medical Research
+    email: timothy.churches@unsw.edu.au
+  - name: Oisín Fitzgerald
+    department: Centre for Big Data Research in Health
+    affiliation: UNSW Sydney
+    email: o.fitzgerald@unsw.edu.au
+  - name: Ian Caterson
+    department: School of Life and Environmental Sciences
+    affiliation: University of Sydney
+    email: ian.caterson@sydney.edu.au  
+  - name: Chandini Raina MacIntyre
+    department: Biosecurity Research Program, The Kirby Institute
+    affiliation: UNSW Sydney
+    email: rainam@protonmail.com
+  - name: Louisa Jorm
+    department: Centre for Big Data Research in Health
+    affiliation: UNSW Sydney
+    email: l.jorm@unsw.edu.au
+abstract: |
+  Abstract to be added here
+keywords:
+  - COVID19
+  - vaccination
+bibliography: references.bib
+biblio-style: unsrt
+output: 
+  rticles::arxiv_article:
+    extra_dependencies: ["float"]
+    keep_tex: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, error = FALSE, message = FALSE, fig.pos = "h", out.extra = "")
+
+# libraries
+library(queuecomputer)
+library(DiagrammeR)
+library(tidyverse)
+library(lubridate)
+library(kableExtra)
+library(sparkline)
+sparkline(0)
+
+
+# Source functions
+source('../R/arenaModel.R')
+source('../R/arrivals.R')
+source('../R/helperFunctions.R')
+
+
+# Load scenario data
+load('../Data/queueTimes.rda')
+load('../Data/utilTimes.rda')
+
+
+updated <- rmarkdown::metadata$updated[1]
+
+knitr::write_bib(.packages(), "packages.bib")
+```
+
+\newpage
+
+# Introduction
+
+
+
+
+# Methods
+
+
+```{r modelGraph, fig.align='center', fig.cap='Queueing model for a vaccination site', fig.height=4.5, fig.width=4.5}
+grViz("
+digraph boxes_and_circles {
+
+  # a 'graph' statement
+  graph [overlap = true, fontsize = 10, layout = dot]
+
+  # Nodes
+  node [shape = rectangle, fixedsize = true, fontcolor = Azure, style = filled, fillcolor = grey20, width = 2.0, label = '1. Entrance']
+  Entrance
+  
+  node [shape = rectangle, fixedsize = true, fontcolor = Azure, style = filled, fillcolor = grey20, width = 2.0, label = '2. Registration']
+  Registration
+  
+  node [shape = rectangle, fixedsize = true, fontcolor = Azure, style = filled, fillcolor = grey20, width = 2.0, label = '3. Assessment']
+  Assessment
+  
+  node [shape = rectangle, fixedsize = true, fontcolor = Azure, style = filled, fillcolor = grey20, width = 2.0, label = '4. Vaccination']
+  Vaccination
+  
+  node [shape = rectangle, fixedsize = true, fontcolor = Azure, style = filled, fillcolor = grey20, width = 2.0, label = '5. Observation']
+  Observation
+  
+  # several 'node' statements
+  node [shape = oval, fixedsize = true, fontcolor = azure, style = filled, fillcolor = grey20, width = 2.0, label = 'A. Vaccine delivery']
+  Delivery 
+  
+  # several 'node' statements
+  node [shape = oval, fixedsize = true, fontcolor = azure, style = filled, fillcolor = grey20, width = 2.0, label = 'B. Reconstitution']
+  Reconstitution 
+
+  # several 'edge' statements
+  Entrance -> Registration [label = '  Transition time']; 
+  Registration -> Assessment [label = '  Transition time']; 
+  Assessment -> Vaccination [label = '  Transition time']; 
+  Vaccination -> Observation  [label = '  Transition time']
+  Delivery -> Reconstitution; Reconstitution -> Vaccination
+}
+", height = 200)
+```
+
+
+
+
+```{r}
+
+# Dataframe of baseline parameters
+df <- data.frame(
+  
+  station = c('Reconstitution', 'Entrance', 'Registration', 'Assessment', 'Vaccination'),
+  staff = c(7, 8, 12, 8, 14),
+  floor = c(1.0001, 2.0, 3.0, 2.0, 2.0),
+  rate = c(3, 1, 0.5, 1, 1), 
+  p5 = NA,
+  p25 = NA,
+  p50 = NA,
+  p75 = NA,
+  p95 = NA,
+  dist = ""
+  
+)
+
+# Generate distributions based on given parameters and large N
+spark_list <- list(df$floor[1] + rexp(1000, df$rate[1]),
+                   df$floor[2] + rexp(1000, df$rate[2]),
+                   df$floor[3] + rexp(1000, df$rate[3]),
+                   df$floor[4] + rexp(1000, df$rate[4]),
+                   df$floor[5] + rexp(1000, df$rate[5]))
+
+# Fill in the blanks for the DF
+for(i in 1:5){
+  df$p5[i] <- quantile(spark_list[[i]], p = .05)
+  df$p25[i] <- quantile(spark_list[[i]], p = .25)
+  df$p50[i] <- quantile(spark_list[[i]], p = .50)
+  df$p75[i] <- quantile(spark_list[[i]], p = .75)
+  df$p95[i] <- quantile(spark_list[[i]], p = .95)
+}
+
+# Tabulate using kableExtra
+df %>% 
+  kbl(
+    format = 'latex',
+    booktabs = TRUE,
+    col.names = c('Station', 'Staff', 'Base time', 'Rate', '5%', '25%', '50%', '75%', '95%', 'Distribution'),
+    digits = 1,
+    caption = "Service time parameter values and resulting distributions"
+  ) %>%
+  add_header_above(c(" " = 4, "Percentiles" = 5, " ")) %>%
+  column_spec(10, image = spec_hist(spark_list, width = 200, 
+                                    breaks = list(c(0:ceiling(max(spark_list[[1]]))),
+                                                  c(0:ceiling(max(spark_list[[2]]))),
+                                                  c(0:ceiling(max(spark_list[[3]]))),
+                                                  c(0:ceiling(max(spark_list[[4]]))),
+                                                  c(0:ceiling(max(spark_list[[5]]))))))  %>% 
+  kable_styling(latex_options = c("hover", "striped", "HOLD_position"),
+                full_width = TRUE, 
+                position = "left")
+```
+
+
+## Assumed arrival times for the baseline model
+
+```{r arrivalTimes, fig.align='center', fig.cap='Example of the randomly generated arrival times, with bookings at quarter past the hour, every hour', fig.height=2.0, fig.width=6.5}
+
+
+dfArrivals <- data.frame(time = arrivalsB(140, 10, 0.04)*60 + parse_date_time("01-04-2021 06:15", "dmY HM"))
+ggplot(data = dfArrivals,
+       aes(x = time)) +
+      geom_histogram(binwidth = 600, centre = 0) +
+      scale_x_datetime('Arrival time', breaks = seq(dmy_hm("01-04-2021 08:15"), dmy_hm("01-04-2021 16:00"), by = 60*60), date_labels = '%H') +
+      scale_y_continuous('Number of arrivals')
+```
+
+# Results
+
+## Staff utilisation factor for the baseline model
+```{r staffUtilisation, fig.align='center', fig.cap='Processing times for the baseline model', fig.height=2.0, fig.width=6.5}
+
+utilTimes %>% 
+  filter(size==30 & test==1 & level==1) %>% 
+  ggplot(aes(x = 1, y = util)) + 
+  geom_hline(aes(yintercept = 0.8), color = 'red', alpha = 0.4, size = 1.4) +
+  geom_boxplot(outlier.shape = 1) + 
+  scale_y_continuous('Staff utilisation factor', limits = c(0,1), breaks = seq(0,1,.2)) + 
+  facet_wrap(~station, ncol = 5) +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.x = element_blank())
+
+```
+
+## Processing times for the baseline model
+```{r processingTimes, fig.align='center', fig.cap='Processing times for the baseline model', fig.height=4.0, fig.width=6.5}
+
+queueTimes %>%
+  filter(size==30 & test==1 & level==1) %>% 
+  filter(station != 'Reconstitution') %>% 
+  ggplot(aes(x = NULL, y = mins)) + 
+  geom_boxplot(outlier.shape = 1) + 
+  scale_y_continuous('Processing time (minutes)', limits = c(0,NA)) + 
+  facet_wrap(~station, ncol = 3, scales = 'free') +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.x = element_blank())
+
+```
+
+## Daily thorughput for the baseline model
+```{r dailyThroughput, fig.align='center', fig.cap='Daily thorughput for the baseline model', fig.height=2.0, fig.width=6.5}
+
+queueTimes %>%
+  filter(size==30 & test==1 & level==1) %>%
+  filter(station == "Total") %>% 
+  group_by(iter) %>% 
+  summarise(tp = max(id)) %>% 
+  ggplot(aes(x=tp)) + 
+  geom_boxplot() + 
+  scale_x_continuous('Daily number of vaccinations') +
+  theme(axis.text.y = element_blank(),
+        axis.title.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+```
+
+
+
+## Baseline utilisation factor
+```{r baselineUtilisation, fig.align='center', fig.cap='Baseline staff utilisation factor', fig.height=2.0, fig.width=6.5}
+utilTimes %>% 
+  filter(test==1 & level == 1) %>% 
+  group_by(station, level, size) %>% 
+  summarise(mean = mean(util)) %>% 
+  ggplot(aes(y = station, x = mean)) + 
+  geom_vline(aes(xintercept = 0.5), color = 'green', alpha = .8) +
+  geom_vline(aes(xintercept = 0.75), color = 'red', alpha = .8) +
+  geom_point() + 
+  facet_wrap(~size, nrow = 1) + 
+  scale_y_discrete(NULL) + 
+  scale_x_continuous("Average staff utilisation factor", labels = c('0', "", '.5', '', '1'), limits = c(0,1), breaks = seq(0,1,.25))
+```
+
+
+## Baseline processing time
+```{r baselineProcessTime, fig.align='center', fig.cap='Baseline processing time', fig.height=2.0, fig.width=6.5}
+# Save median queue time across all sites
+medianqTime <- queueTimes %>% 
+  filter(test==1 & level == 1 & station=='Total') %>% 
+  summarise(t = median(mins)) %>% 
+  as.numeric()
+
+queueTimes %>% 
+  filter(test==1 & level == 1 & station=='Total') %>% 
+  ggplot(aes(y = mins, x = 1)) + 
+  geom_hline(aes(yintercept = medianqTime), color = 'blue', size = 3, alpha = 0.2) +
+  geom_boxplot() + 
+  facet_wrap(~size, nrow = 1) + 
+  scale_x_discrete(NULL) + 
+  scale_y_continuous("Processing time (minutes)", limits = c(0, 100))
+```
+
+## Throughput across larger sites
+```{r baselineThroughput, fig.align='center', fig.cap='Baseline processing time', fig.height=4.0, fig.width=6.5}
+queueTimes %>% 
+  filter(test==1 & level == 1 & station=='Total') %>% 
+  group_by(size, iter) %>% 
+  summarise(n = max(id)) %>% 
+  ggplot(aes(x = size, y = n)) + 
+  geom_jitter(width = 1, shape = 1, color = 'grey40') +
+  geom_smooth(method = 'lm') +
+  scale_x_continuous('Healthcare staff numbers') + 
+  scale_y_continuous('Number of vaccinations per day', limits = c(0, NA), labels = scales::comma)
+```
+
+## Increase in processing time with increased arrivals by site size
+```{r processingTimeTest, fig.align='center', fig.cap='Increase in processing time with increased arrivals by site size', fig.height=4.0, fig.width=6.5}
+queueTimes %>% 
+  filter(test==3 & station=='Total') %>% 
+  ggplot(aes(x = factor(size), y = mins, fill = factor(level))) + 
+  geom_boxplot(outlier.shape = NA) +
+  scale_x_discrete('Number of healthcare staff') + 
+  scale_y_continuous('Total processing time (minutes)', limits = c(0, NA)) +
+  scale_fill_discrete('Arrivals\nincrease', label = c('+0%', '+10%', '+20%', '+30%', '+40%'))
+```
+
+## Increase in processing time with delays to registration time
+```{r registrationTimeTest, fig.align='center', fig.cap='Increase in processing time with increased arrivals by site size', fig.height=4.0, fig.width=6.5}
+queueTimes %>% 
+  filter(test==1 & station=='Total') %>% 
+  ggplot(aes(x = factor(size), y = mins, fill = factor(level))) + 
+  geom_boxplot(outlier.shape = NA) +
+  scale_x_discrete('Number of healthcare staff') + 
+  scale_y_continuous('Total processing time (minutes)', limits = c(0, NA)) +
+  scale_fill_discrete('Arrivals\nincrease', label = c('+0%', '+10%', '+20%', '+30%', '+40%'))
+```
+
+# Discussion
+
+
+# Contributions
+
+# Acknowledgements
+
+This research was supported by the generous assistance of Ian Sharp, philanthropic supporter of UNSW research, and by a research seed grant provided by the Sydney Partnership for Health, Education, Research and Enterprise (SPHERE) Infectious diseases, Immunity and Inflammation (Triple-I) Clinical Academic Group.
+
+\newpage
+
+# References
