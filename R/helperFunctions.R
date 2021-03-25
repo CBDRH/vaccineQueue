@@ -16,15 +16,8 @@ getQueueTime <- function(gpModelOutput){
 }
 
 
-# Create a data frame of queue times based on GP model output
-getGPUtilTime <- function(gpModelOutput){
-  map_df(gpModelOutput, ~tibble(nServers = .$nServers,
-                                qLengths = .$qLengths,
-                                util = .$util), .id = "iter") 
-}
-
 # Create a data frame of queue times based on Arena model output
-getArenaUtilTime <- function(arenaModelOutput){
+getUtilTime <- function(arenaModelOutput){
   map_df(arenaModelOutput, ~tibble(station = .$qLengths$station,
                                    nServers = .$nServers$nServers,
                                    qLengths = .$qLengths$qLengths,

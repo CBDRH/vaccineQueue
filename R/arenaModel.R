@@ -57,7 +57,7 @@ arenaModel = function(arrivals,
   
   # Queue process
   
-  ## Reconstitution queue
+  ## Preparation queue
   rsiTarget1 <- ceiling(n/8)
   rsiTarget2 <- n - rsiTarget1*7 
   rsiArrivals <- sort(c(rep(seq(0, 360, by = 60), rsiTarget1), rep(420, rsiTarget2)))
@@ -115,7 +115,7 @@ arenaModel = function(arrivals,
   ## Code stations as a factor
   dfQueue$station <- factor(dfQueue$station, 
                             levels = c('rsi', 'ent', 'reg', 'ass', 'vac', 'obs', 'tot'), 
-                            labels = c('Reconstitution', 'Entrance', 'Registration', 'Assessment', 'Vaccination', 'Observation', 'Total'))
+                            labels = c('Preparation', 'Entrance', 'Registration', 'Assessment', 'Vaccination', 'Observation', 'Total'))
   
   # Store the vaccine queue length and utilisation time 
   sumRsi <- summary(rsiQueue)
@@ -137,7 +137,7 @@ arenaModel = function(arrivals,
   ## Code stations as a factor
   dfLength$station <- factor(dfLength$station,
                             levels = c('rsi', 'ent', 'reg', 'ass', 'vac'),
-                            labels = c('Reconstitution', 'Entrance', 'Registration', 'Assessment', 'Vaccination'))
+                            labels = c('Preparation', 'Entrance', 'Registration', 'Assessment', 'Vaccination'))
 
 
   dfUtil <- data.frame(
@@ -153,7 +153,7 @@ arenaModel = function(arrivals,
   ## Code stations as a factor
   dfUtil$station <- factor(dfUtil$station,
                             levels = c('rsi', 'ent', 'reg', 'ass', 'vac'),
-                            labels = c('Reconstitution', 'Entrance', 'Registration', 'Assessment', 'Vaccination'))
+                            labels = c('Preparation', 'Entrance', 'Registration', 'Assessment', 'Vaccination'))
 
 
 
@@ -171,7 +171,7 @@ arenaModel = function(arrivals,
   ## Code stations as a factor
   dfServers$station <- factor(dfServers$station,
                               levels = c('rsi', 'ent', 'reg', 'ass', 'vac'),
-                              labels = c('Reconstitution', 'Entrance', 'Registration', 'Assessment', 'Vaccination'))
+                              labels = c('Preparation', 'Entrance', 'Registration', 'Assessment', 'Vaccination'))
   
   output <- list(serviceTime = dfService, 
                   qTimes = dfQueue, 

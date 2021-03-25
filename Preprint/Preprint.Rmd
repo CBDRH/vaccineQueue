@@ -1,5 +1,5 @@
 ---
-title: "Economies of scale: Larger vaccination distribution hubs are more resiliant to service disruptions"
+title: "Modelling vaccination capacity at mass vaccination clinic hubs and general practice clinics"
 authors:
   - name: Mark Hanly
     department: Centre for Big Data Research in Health
@@ -8,38 +8,38 @@ authors:
   - name: Tim Churches
     department: South Western Sydney Clinical School, Faculty of Medicine & Health, UNSW Sydney &
     affiliation: Ingham Institute for Applied Medical Research
-    email: timothy.churches@unsw.edu.au
   - name: Oisín Fitzgerald
     department: Centre for Big Data Research in Health
     affiliation: UNSW Sydney
-    email: o.fitzgerald@unsw.edu.au
   - name: Ian Caterson
     department: School of Life and Environmental Sciences
     affiliation: University of Sydney
-    email: ian.caterson@sydney.edu.au  
-  - name: Chandini Raina MacIntyre
+  - name: Raina MacIntyre
     department: Biosecurity Research Program, The Kirby Institute
     affiliation: UNSW Sydney
-    email: rainam@protonmail.com
   - name: Louisa Jorm
     department: Centre for Big Data Research in Health
     affiliation: UNSW Sydney
-    email: l.jorm@unsw.edu.au
 abstract: |
   Abstract to be added here
 keywords:
   - COVID19
   - vaccination
-bibliography: references.bib
+bibliography:  [packages.bib, references.bib]
+csl: jama.csl
 biblio-style: unsrt
+header-includes:
+  - \usepackage[british]{babel}
+  - \usepackage{gensymb}
 output: 
   rticles::arxiv_article:
-    extra_dependencies: ["float"]
     keep_tex: true
+    includes:  
+      in_header: my_header.tex
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, error = FALSE, message = FALSE, fig.pos = "h", out.extra = "")
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, error = FALSE, message = FALSE)
 
 # libraries
 library(queuecomputer)
@@ -48,41 +48,88 @@ library(tidyverse)
 library(lubridate)
 library(kableExtra)
 library(sparkline)
+library(RColorBrewer)
 sparkline(0)
 
 
 # Source functions
-source('../R/arenaModel.R')
 source('../R/arrivals.R')
 source('../R/helperFunctions.R')
 
 
 # Load scenario data
-load('../Data/queueTimes.rda')
-load('../Data/utilTimes.rda')
-
+load('../Data/queueTimesRPA.rda')
+load('../Data/utilTimesRPA.rda')
+load('../Data/queueTimesGP.rda')
+load('../Data/utilTimesGP.rda')
 
 updated <- rmarkdown::metadata$updated[1]
 
 knitr::write_bib(.packages(), "packages.bib")
+
+# the number of simulation runs, a constant
+nSim <- 20
 ```
 
 \newpage
 
 # Introduction
 
+Mutiple SARS-CoV-2 vaccines have been demonstrated to be safe and efficacious in preventing severe COVID-19 disease and population vaccination programs are currently under way around the world. In Australia, the federal government has procured a supply of three different vaccines, including 20 million Pfizer/bioNTech doses and 51 million Novavax doses, which will be imported from overseas, and 54 million Oxford University/AstraZeneca doses, the bulk of which will be manufactured locally in Australia.(ref) Roll-out of the national vaccination program began in late February, with the Pfizer/BioNTech vaccine administered to the first of five priority phases though hospital hubs with access to the necessary -70\degree C ultra-cold-chain storage facilities. In February, the Therapeutic Goods Administration (TGA) approved the use of the AstraZeneca vaccine, and roll-out of this vaccine to the second priority phase began in mid-March. The AstraZeneca vaccine can be stored in a standard fridge, allowing for distribution through  general practitioners (GPs) and Community Pharmacies (CPs). 
 
+There is a clear imperative to vaccinate the bulk of the Australian population, and indeed the global population, as quickly as possible. Recent modelling work has demonstrated that higher vaccination coverage will reduce the size and duration of an epidemic in the event of an outbreak (ref). Achieving herd immunity against COVID-19 will allow states and countries to open borders with more confidence and avoid expensive and disruptive lockdowns. Preventing the transmission of the SARS-CoV-2 virus will minimise opportunities for the virus to mutate and produce more transmissible or deadly variants.
 
+The number of vaccine doses administered per day is key to achieving a high vaccine coverage as quickly as possible. Projections indicate that a rate of 200,000 daily vaccinations would be required to deliver two doses each to all willing Australians in a six month period (ref). CSL, the pharmaceutical company responsible for manufacturing the AstraZeneca vaccine in Australia, aims to produce one million doses per week. This suggests that---combined with ongoing deliveries of the Pfizer vaccine, and future deliveries of the Novavax vaccine---there feasibly will be enough doses available to aim for the target of 200,000 doses per day.
+
+What is less clear at this point in time is whether the logistical capacity exists to administer this number of doses at the rate they become available. The current roll-out plan centres on GPs and CPs as the main vaccination hubs. Initial reports suggest that more than 4,500 GPs will participate in the second phase of the roll-out (ref), with an as-yet-unknown number of Community Pharmacies (CPs) expected to join the distribution efforts for subsequent phases. (ref) Distribution through local GPs and CPs has the advantage of drawing on existing networks and infrastructure, and these sites will be convenient and familiar for patients. However, the potential capacity of these venues is limited both by physical space and available staff. Another major limiting factor is that GPs and CPs must also maintain their usual workloads in addition to running vaccination clinics. A potential complimentary model to smaller local vaccination sites are centralised mass vaccination hubs delivered at larger venues such as schools, conference centres or sports arenas. Previous planning exercises and recent experience in delivering the Pfizer vaccine at scale thorugh hospital hubs, has shown that mass vaccination sites can administer a high number of daily vaccinations and sustain this rate of distribution (ref). While offering a higher daily throughput, these larger hubs do require more staff and larger premises to deliver at scale.
+
+In this analysis, we model the potential vaccination capacity of smaller GP- or CP-based local vaccination hubs and larger school- or hospital-based mass vaccination hubs using a stochastic queueing model. This work aims to help inform public health planning for the delivery of vaccinations here in Australia and internationally. 
 
 # Methods
 
+## Overview
+We modelled vaccination delivery as a queueing process and proposed distinct appointment schedules and queue networks for mass vaccination hubs and local GP vaccination clinics, based on real-world examples of how these different delivery models are currently being implemented. For both queue networks, we specified three baseline models based on relatively low, medium and high staffing availability. We simulated data from each model to estimate staff utilisation and service times and by calibrating the appointment schedule to keep these two metrics within reasonable limits, we estimated baseline daily throughput for each model. Finally we performed two stress tests to explore how the different queue networks and staffing capabilities responded to system pressures. The first stress test was to gradually increase the number of appointments, reflecting capability to scale up daily throughput with the same number of staff. The second stress test was to gradually decrease available staff, reflecting staff shortages due to illness or an urgent incident requiring immediate attentation. 
 
-```{r modelGraph, fig.align='center', fig.cap='Queueing model for a vaccination site', fig.height=4.5, fig.width=4.5}
+## Settings
+
+### Centralised mass vaccination hub
+When discussing mass vaccination hubs, we are considering large premises that can accommodate a high throughput of several hundred patients per day. Potential locations would need to have the neccessary infrastructure to accommodate high throughput, including access to public transport, parking, disability access, bathrooms and first-aid stations. Examples of settings that are currently being used as mass vaccination hubs in the UK include hospitals theatres, campuses, showgrounds, conference centres and sports stadiums. 
+
+### Local GP vaccination clinic
+General practices and community pharmacies come in different sizes, with different physical infrastructure and practice team compositions. For the purposes of this analysis we assumed that the site has access to an adequately-sized waiting area where patients will wait before and after receiving their vaccine, as well as separate rooms or cordoned-off areas for each vaccinator to allow some privacy during vaccination.  
+
+## Vaccination tasks
+
+There are certain tasks that must be undertaken, regardless of the vaccination setting. We consider the following steps to be common to all vaccination sites, although the order that these steps are undertaken may be different in smaller versus larger sites.
+
+* **Temperature check** To assess presence of fever.
+* **Sanitation** Access to hand sanitiser and masks.
+* **Registration** Confirm patient has a booking.
+* **Information** Receive and review information about the vaccine.
+* **Pre-vaccination checklist** The patient must fill in a pre-vaccination checklist to identify any potential contraindications, and a clinical staff member will need to run through this list with them. 
+* **Consent** The healthcare staff must confirm that the patient is happy to proceed and record their consent.
+* **Doffing** The patient must expose their upper arm to receive the vaccination. 
+* **Vaccine preparation** Vaccines delivered in multi-dose vials must be prepared close to the time that they are administered. The preparation steps differ for different vaccines.
+* **Injection** The vaccinator must administer the vaccine. 
+* **Booking** Confirm an appointment to receive second vaccine dose.
+* **Observation** Following vaccination, the patient must be monitored for any adverse reaction. 
+
+
+## Proposed queue networks
+
+Our proposed queue networks for the mass vaccination hub and GP vaccination clinic differ in the assumed layout of stations and how the tasks above are distributed across these stations. An overview of the two queue networks is presented in Figure \ref{fig:diagram} and these are described in more detail below.
+
+```{r diagram, fig.align='center', fig.cap='Queueing model for arena vaccination site (A) and GP vaccination site (B)'}
+
 grViz("
 digraph boxes_and_circles {
+rankdir=TB;
+graph [overlap = true, fontsize = 18, layout = dot]
 
+subgraph cluster01 {
+  label='A. Mass vaccination hub'
+  
   # a 'graph' statement
-  graph [overlap = true, fontsize = 10, layout = dot]
 
   # Nodes
   node [shape = rectangle, fixedsize = true, fontcolor = Azure, style = filled, fillcolor = grey20, width = 2.0, label = '1. Entrance']
@@ -99,220 +146,573 @@ digraph boxes_and_circles {
   
   node [shape = rectangle, fixedsize = true, fontcolor = Azure, style = filled, fillcolor = grey20, width = 2.0, label = '5. Observation']
   Observation
-  
-  # several 'node' statements
+
   node [shape = oval, fixedsize = true, fontcolor = azure, style = filled, fillcolor = grey20, width = 2.0, label = 'A. Vaccine delivery']
   Delivery 
-  
-  # several 'node' statements
-  node [shape = oval, fixedsize = true, fontcolor = azure, style = filled, fillcolor = grey20, width = 2.0, label = 'B. Reconstitution']
-  Reconstitution 
+
+  node [shape = oval, fixedsize = true, fontcolor = azure, style = filled, fillcolor = grey20, width = 2.0, label = 'B. Preparation']
+  Preparation 
 
   # several 'edge' statements
   Entrance -> Registration [label = '  Transition time']; 
   Registration -> Assessment [label = '  Transition time']; 
   Assessment -> Vaccination [label = '  Transition time']; 
   Vaccination -> Observation  [label = '  Transition time']
-  Delivery -> Reconstitution; Reconstitution -> Vaccination
+  Delivery -> Preparation; Preparation -> Vaccination
+
+}  
+  
+  
+subgraph cluster02 {
+label='B. GP vaccination clinic'
+
+  node [shape = rectangle, fixedsize = true, fontcolor = Azure, style = filled, fillcolor = grey20, width = 2.0, label = '1. Registration']
+  Registration2
+
+  node [shape = rectangle, fixedsize = true, fontcolor = Azure, style = filled, fillcolor = grey20, width = 2.0, label = '2. Vaccination']
+  Vaccination2
+  
+  node [shape = rectangle, fixedsize = true, fontcolor = Azure, style = filled, fillcolor = grey20, width = 2.0, label = '3. Observation']
+  Observation2
+  
+  # several 'node' statements
+  node [shape = oval, fixedsize = true, fontcolor = azure, style = filled, fillcolor = grey20, width = 2.0, label = 'A. Vaccine delivery']
+  Delivery2 
+  
+  # several 'node' statements
+  node [shape = oval, fixedsize = true, fontcolor = azure, style = filled, fillcolor = grey20, width = 2.0, label = 'B. Preparation']
+  Preparation2 
+
+  # several 'edge' statements
+  Registration2 -> Vaccination2;
+  Vaccination2 -> Observation2;
+  Delivery2 -> Preparation2; 
+  Preparation2 -> Vaccination2
+
+}  
+
 }
-", height = 200)
+", width = 400, height = 600)
+
 ```
 
+### Queue network for a centralised mass vaccination hub.
+The proposed queue network for a mass vaccination hub is modelling on the Pfizer vaccination hub based at the Royal Prince Albert (RPA) hospital in Sydney. In this queue network, patients traverse five stations: Entrance, Registration, Assessment, Vaccination and Observation. The first four stations require the patient to wait for an available staff member so these are modelled as queues, with new arrivals serviced by the next available staff member on a first-come-first-served basis. The observation stage does not require patients to wait for an available staff member so this stage is modelled as a stochastic waiting period, with longer waits for a small proportion of individuals to reflect adverse reactions. Because mass vaccination sites require a large premises, the queue network also incorporates a short transition time between stations.
+
+Vaccine doses must be prepared close to the time they are administered, and clearly delays to this process would result in delays at the vaccination stage. To capture this feature of the vaccination process, the queue network includes a parallel queue for vaccine preparation (see Figure \ref{fig:diagram}A) which merges with the patient queue at the vaccination station. The distribution of vaccination tasks across these stations is described in more detail below.
+
+#### 1. Entrance
+
+Patients arrive at the premises and queue up to get a temperature check and to check in to the venue. Hand sanitiser and masks are made available. This station would be overseen by one or more health staff but could also be supplemented with volunteers to help marshal patients to the next station.
+
+#### 2. Registration 
+
+Having passed through the entrance station, patients join the queue for registration. The registration desks are staffed by one or more healthcare personnel. As part of the registration process, patients will have their current appointment confirmed potentially could also book their second vaccination. They are provided with pre-vaccination information to read while they wait for the next station. 
+
+#### 3. Assessment 
+
+Once registered, patients join the queue for assessment. The purpose of assessment is to make sure that the patient is clinically suitable to receive the vaccine. During this stage the patients consent is also recorded.
+
+#### 4. Vaccination   
+
+Having been given final clearance to receive the vaccine at the assessment station, patients join the queue for vaccination. Once a vaccinator becomes available, the patient can take a seat and expose their upper arm. The vaccinator confirms the patients name and details then administers the vaccine. The vaccinator will apply a band-aid to the vaccination site and note the vaccination time on a sticker and apply this to the patients shoulder or lapel. 
+
+#### 5. Observation
+
+Once vaccinated, patients advance to an observation area where they take a seat and wait for the allotted time to ensure they experience no adverse reaction. A staff member will advise the patient once their allotted observation time has passed, at which point they can make their way out of the premises. 
+
+#### A. Vaccine delivery 
+
+The proposed queue network does not set out to model vaccine delivery. All of our analyses assume that an adequate supply of vaccine doses is available at the premises. 
+
+#### B. Vaccine preparation 
+
+Vaccines are delivered in multi-dose vials containing 5-6 doses (Pfizer) or 8-10 doses (AstraZeneca). The exact preparation steps will differ depending on the vaccine being prepared. Steps incorporated at this station may include logging the vial, visual inspection of the dose, reconstitution (for the Pfizer vaccine), and drawing the vaccine into syringes. 
 
 
 
-```{r}
+### Queue network for a local GP vaccination clinic
 
-# Dataframe of baseline parameters
+The proposed queue network for a local GP vaccination clinic is presented in Figure \ref{fig:diagram}B. In this queue network, patients traverse three distinct stations: Registration, Vaccination and Observation. To advance to the Registration and Vaccination stations, patients must wait for the next available staff member so these stations are modelled as queueing processes, with patients serviced by the next available staff member on a first-come-first-served basis. As with the mass vaccination model, the observation station is modelled as a stochastic waiting period rather than a queue, and there is a parallel queue specified for vaccine preparation. The time taken to walk between stations in a GP clinic is assumed to be negligible and not included in the model. The distribution of vaccination tasks across these stations is described in detail below.
+
+#### Registration 
+
+Patients arrive at the premises, and receive a temperature check on entry. They are provided with pre-vaccination information and a check-list of contra-indicated items, either as a paper form or on a hand-held tablet. While seated in a waiting area, they read the provided information and complete the pre-vaccination checklist. Once complete, they return the paper form or tablet to the staff member and wait for the next available vaccinator. This process is assumed to take place in a shared waiting area, which may also be used for the observation step.
+
+#### Vaccination 
+
+Once a vaccinator becomes available, the patient advances to the vaccination area, which may be a doctor's office or other suitable cordoned-off area. The vaccinator reviews the patient's pre-vaccination checklist, probes any items that have been checked and records the patient's consent. The patient exposes their upper arm and the vaccinator administers the vaccination and applies a band-aid to the vaccination site. Finally the vaccinator notes the vaccination time on a sticker and applies this to the patients shoulder or lapel. 
+
+#### Observation 
+
+Once vaccinated, patients return to the waiting area where they take a seat and wait for the allotted time to ensure they experience no adverse reaction. The waiting area may be monitored by the same staff member who is managing the registration process.  
+
+
+## Assumed service times
+
+For both the mass vaccination hub and GP vaccination clinic, the station service times were modelled as exponential processes with fixed minimum service times. The exception is the observation station, which was modelled as bimodal distribution, with normally distributed observation times for patients who did not experience an adverse reaction and exponentially distributed observation times for a small random subset to reflect a low incidence of adverse reactions. The assumed minimum service times and exponential rate parameters for each station are summarised in Table \ref{tab:serviceTimeAssumptions}), together with the resulting distribution of service times. 
+
+
+```{r serviceTimesAssumptions}
+
 df <- data.frame(
-  
-  station = c('Reconstitution', 'Entrance', 'Registration', 'Assessment', 'Vaccination'),
-  staff = c(7, 8, 12, 8, 14),
-  floor = c(1.0001, 2.0, 3.0, 2.0, 2.0),
-  rate = c(3, 1, 0.5, 1, 1), 
-  p5 = NA,
-  p25 = NA,
-  p50 = NA,
-  p75 = NA,
-  p95 = NA,
-  dist = ""
-  
+   
+   station = c('Preparation', 'Entrance', 'Registration', 'Assessment', 'Vaccination', 'Observation', 'Adverse reaction', 'Preparation', 'Registration', 'Vaccination', 'Observation', 'Adverse reaction'),
+   form = c(rep('exponential', 5), 'normal', rep('exponential', 4), 'normal', 'exponential'), 
+   formula = c('1 + exp(3)', '2 + exp(1)', '3 + exp(0.7)', '2 + exp(1)', '3 + exp(1)', 'norm(20, 0.5)', '20 + exp(0.1)', 
+               '1 + exp(2)', '1 + exp(3)', '1 + exp(3)', 'norm(20, 0.5)', '20 + exp(0.1)'),
+   p5 = NA,
+   p25 = NA,
+   p50 = NA,
+   p75 = NA,
+   p95 = NA,
+   dist = ""
+   
 )
 
 # Generate distributions based on given parameters and large N
-spark_list <- list(df$floor[1] + rexp(1000, df$rate[1]),
-                   df$floor[2] + rexp(1000, df$rate[2]),
-                   df$floor[3] + rexp(1000, df$rate[3]),
-                   df$floor[4] + rexp(1000, df$rate[4]),
-                   df$floor[5] + rexp(1000, df$rate[5]))
+spark_list <- list(1 + rexp(1000, 3),
+                   2 + rexp(1000, 1),
+                   3 + rexp(1000, 0.7),
+                   2 + rexp(1000, 1),
+                   3 + rexp(1000, 1),
+                   rnorm(1000, 20, 0.1),
+                   20 + rexp(1000, 0.1),
+                   1 + rexp(1000, 2),
+                   1 + rexp(1000, 3),
+                   1 + rexp(1000, 3),
+                   rnorm(1000, 20, 0.5),
+                   20 + rexp(1000, 0.1)
+)
 
 # Fill in the blanks for the DF
-for(i in 1:5){
-  df$p5[i] <- quantile(spark_list[[i]], p = .05)
-  df$p25[i] <- quantile(spark_list[[i]], p = .25)
-  df$p50[i] <- quantile(spark_list[[i]], p = .50)
-  df$p75[i] <- quantile(spark_list[[i]], p = .75)
-  df$p95[i] <- quantile(spark_list[[i]], p = .95)
+for(i in 1:12){
+   df$p5[i] <- quantile(spark_list[[i]], p = .05)
+   df$p25[i] <- quantile(spark_list[[i]], p = .25)
+   df$p50[i] <- quantile(spark_list[[i]], p = .50)
+   df$p75[i] <- quantile(spark_list[[i]], p = .75)
+   df$p95[i] <- quantile(spark_list[[i]], p = .95)
 }
 
 # Tabulate using kableExtra
 df %>% 
-  kbl(
+   kbl(
+      format = 'latex',
+      booktabs = TRUE,
+      col.names = c('Station', 'Form', 'Formula', '5%', '25%', '50%', '75%', '95%', 'Distribution'),
+      digits = 1,
+      caption = "Service time parameter values and resulting distributions",
+      label = 'serviceTimeAssumptions'
+   ) %>%
+   column_spec(1, width = '4cm') %>% 
+   column_spec(2, width = '2cm') %>% 
+   column_spec(3, width = '2cm') %>% 
+   column_spec(4, width = '1cm') %>% 
+   column_spec(5, width = '1cm') %>% 
+   column_spec(6, width = '1cm') %>% 
+   column_spec(7, width = '1cm') %>% 
+   column_spec(8, width = '1cm') %>%
+   column_spec(9, image = spec_hist(spark_list,  breaks = 40, same_lim = FALSE)) %>%
+   add_header_above(c(" " = 3, "Percentiles" = 5, " ")) %>%
+   group_rows("Arena model", 1, 7, indent = FALSE) %>%
+   group_rows("GP model", 8, 12, indent = FALSE) %>%
+   kable_styling(latex_options =  c("striped", "hold_position", "scale_down"), 
+                 full_width = FALSE, 
+                 position = "left")  
+
+```
+
+
+## Assumed arrival times 
+
+All models assumed patients were given fixed appointment slots across an eight hour clinic running from 8am to 4pm. For mass vaccination hubs we assumed that appointments would be given for quarter past the hour every hour. For local GP hubs we assumed that appointments would be give in ten minute intervals. Actual arrival times were based on the appointment schedule but included some random noise, reflecting that most people would turn up before their allotted time, while a smaller proportion would arrive after their allotted time. Arrival times also accounted for a small proportion of no-shows, set at 2% for both local and mass vaccination hubs. The actual number of arrivals per appointment interval was calibrated to keep the queue performance metrics within reasonable limits. As an example, Figure \ref{fig:arrivalTimes} presents simulated arrival times for a mass vaccination hub at the rate of 120 arrivals every hour, and a GP vaccination clinic at a rate of 4 arrivals every 10 minutes.
+
+```{r arrivalTimes, fig.align='center', fig.cap='Randomly generated arrival times for a mass vaccination hub (A) and a GP vaccination clinic (B)', fig.height=3.0, fig.width=6.5}
+
+# Simulate arrivals data based
+dfArrivals1 <- data.frame(time = arrivals(120, 60, 0, 5, 0.02)*60 + parse_date_time("01-04-2021 06:15", "dmY HM"))
+dfArrivals2 <- data.frame(time = arrivals(4, 10, -3, 1, 0.02)*60 + parse_date_time("01-04-2021 06:15", "dmY HM"))
+
+# Plot arrivals data
+
+p1 <- ggplot(data = dfArrivals1,
+       aes(x = time)) +
+      geom_histogram(colour = 'white', binwidth = 600) +
+      scale_x_datetime(' ', date_labels = '%H', date_breaks = '1 hour', limits = c(dmy_hm("01-04-2021 08:00"), dmy_hm("01-04-2021 16:00"))) +
+      scale_y_continuous('Number of\narrivals')
+
+p2 <- ggplot(data = dfArrivals2,
+       aes(x = time)) +
+      geom_histogram(color = 'white', binwidth = 600) +
+      scale_x_datetime('Time of day (hours)', date_labels = '%H', date_breaks = '1 hour', limits = c(dmy_hm("01-04-2021 08:00"), dmy_hm("01-04-2021 16:00"))) +
+      scale_y_continuous('Number of\narrivals', limits = c(0,10), breaks = seq(0,10,2))
+
+# Combine plots
+ggpubr::ggarrange(p1, p2, ncol = 1, labels = c('A', 'B'), vjust = c(1.2, 0), hjust = -.2)
+
+```
+
+
+## Staffing levels 
+
+For each of the proposed queue networks we specified models with relatively low, medium and high staffing availability, ranging from 21 to 63 healthcare staff for mass vaccination sites and from 4 to 12 healthcare staff for GP vaccination clinics (Table \ref{tab:staffing}). The distribution of staff across the queueing stations is kept stable regardless of the total staffing capacity. For example, for the mass vaccination model there are three staff assigned to the Registration station for every one staff member assigned to the Preparation station, regardless of the assumed size of the hub. This equivalence is facilitates valid comparisons across hub sizes later in the analysis. 
+
+```{r}
+
+df <- data.frame(
+   
+   size = rep(c('low', 'medium', 'high'), 2),
+   preparation = c(2,4,6,1,2,3),
+   arrival = c(4,8,12,'*','*','*'),
+   registration = c(6,12,18,1,2,3),
+   assessment = c(4,8,12,'*','*','*'),
+   vaccination = c(5,10,15,2,4,6),
+   total = c(21,42,63,4,8,12)
+)
+
+kbl(df,
     format = 'latex',
     booktabs = TRUE,
-    col.names = c('Station', 'Staff', 'Base time', 'Rate', '5%', '25%', '50%', '75%', '95%', 'Distribution'),
+    col.names = c('Size', 'Preparation', 'Entrance', 'Registration', 'Assessment', 'Vaccination', 'Total'),
     digits = 1,
-    caption = "Service time parameter values and resulting distributions"
-  ) %>%
-  add_header_above(c(" " = 4, "Percentiles" = 5, " ")) %>%
-  column_spec(10, image = spec_hist(spark_list, width = 200, 
-                                    breaks = list(c(0:ceiling(max(spark_list[[1]]))),
-                                                  c(0:ceiling(max(spark_list[[2]]))),
-                                                  c(0:ceiling(max(spark_list[[3]]))),
-                                                  c(0:ceiling(max(spark_list[[4]]))),
-                                                  c(0:ceiling(max(spark_list[[5]]))))))  %>% 
-  kable_styling(latex_options = c("hover", "striped", "HOLD_position"),
-                full_width = TRUE, 
-                position = "left")
+    caption = "Staff numbers by station for low, medium and high staffing availability",
+    label = 'staffing',
+    align = c('l',rep('r',6))
+) %>%
+   column_spec(1, width = '2cm') %>% 
+   column_spec(2, width = '2cm') %>% 
+   column_spec(3, width = '2cm') %>% 
+   column_spec(4, width = '2cm') %>% 
+   column_spec(5, width = '2cm') %>% 
+   column_spec(6, width = '2cm')  %>% 
+   column_spec(7, width = '2cm')  %>% 
+   add_header_above(c(" " = 1, "Staff numbers" = 6)) %>%
+   group_rows("Mass vaccination hub", 1, 3, indent = FALSE) %>%
+   group_rows("Local GP hub", 4, 6, indent = FALSE) %>%
+   kable_styling(latex_options =  c("striped", "hold_position", "scale_down"), 
+                 full_width = FALSE, 
+                 position = "left") %>% 
+   footnote(symbol = 'Not applicable')
+
 ```
 
+Note that the total staffing numbers given in Table \ref{tab:staffing} only include staffing requirements for the stations in the assumed queue network and do not cover all staffing needs to successfully run a vaccination clinic. For example, the staff needed to oversee the observation station are not included. Also not covered here are other support staff, such as administrators, cleaners, marshals and caterers. The number and type of support staff required will vary depending on the size of the vaccination hub, and must also be taken into account when planning vaccine distribution. 
 
-## Assumed arrival times for the baseline model
+## Queue performance
 
-```{r arrivalTimes, fig.align='center', fig.cap='Example of the randomly generated arrival times, with bookings at quarter past the hour, every hour', fig.height=2.0, fig.width=6.5}
+We use two metrics to quantify queue performance, total processing time and staff utilisation. Total processing time, measured in minutes, is the total time from start to finish of the queue network. Staff utilisation is the average proportion of staff that are available across the simulation run. An established property of queueing models is that queue performance degrades when staff 
 
+## Software and code
 
-dfArrivals <- data.frame(time = arrivalsB(140, 10, 0.04)*60 + parse_date_time("01-04-2021 06:15", "dmY HM"))
-ggplot(data = dfArrivals,
-       aes(x = time)) +
-      geom_histogram(binwidth = 600, centre = 0) +
-      scale_x_datetime('Arrival time', breaks = seq(dmy_hm("01-04-2021 08:15"), dmy_hm("01-04-2021 16:00"), by = 60*60), date_labels = '%H') +
-      scale_y_continuous('Number of arrivals')
-```
+The analysis was performed using R version 4.0.3[@R-base] and associated packages[@tidyverse2019]. Queueing models were simulated using the `queuecomputer` package (ref). The complete source code to reproduce this analysis can be accessed at https://github.com/CBDRH/.... 
 
 # Results
 
-## Staff utilisation factor for the baseline model
-```{r staffUtilisation, fig.align='center', fig.cap='Processing times for the baseline model', fig.height=2.0, fig.width=6.5}
+## Calibrating arrivals to achieve reasonable service times and staff utilisation
 
-utilTimes %>% 
-  filter(size==30 & test==1 & level==1) %>% 
-  ggplot(aes(x = 1, y = util)) + 
-  geom_hline(aes(yintercept = 0.8), color = 'red', alpha = 0.4, size = 1.4) +
-  geom_boxplot(outlier.shape = 1) + 
-  scale_y_continuous('Staff utilisation factor', limits = c(0,1), breaks = seq(0,1,.2)) + 
-  facet_wrap(~station, ncol = 5) +
-  theme(axis.text.x = element_blank(),
-        axis.title.x = element_blank(),
-        axis.ticks.x = element_blank())
+In this section we present estimates of average processing times and average staff utilisation based on (i) the queue networks presented in Figure \ref{fig: diagram} and (ii) the stochastic service times described in Table \ref{tab:serviceTimeAssumptions}. The number of available staff (and thus the number of open queues) at each station are fixed to be constant at the levels set out in Table \ref{tab:staffing}. Within each setting, the frequency of arrivals is increased gradually. For example, for the mass vaccination site with low staffing numbers the frequency of arrivals was increase from 10 per hour to 110 per hour, in increments of 25. For each of the six implied models, the average processing time and staff utilisation across `r nSim` simulation runs are presented in Figure \ref{fig:processingTimes} and \ref{fig:staffUtilisation}.
 
-```
 
-## Processing times for the baseline model
-```{r processingTimes, fig.align='center', fig.cap='Processing times for the baseline model', fig.height=4.0, fig.width=6.5}
+```{r processingTimes, fig.align='center', fig.cap='Average processing times by arrival frequency for a mass vaccination hub (A) and a GP vaccination clinic (B)', fig.height=3.5, fig.width=6.5}
 
-queueTimes %>%
-  filter(size==30 & test==1 & level==1) %>% 
-  filter(station != 'Reconstitution') %>% 
-  ggplot(aes(x = NULL, y = mins)) + 
-  geom_boxplot(outlier.shape = 1) + 
-  scale_y_continuous('Processing time (minutes)', limits = c(0,NA)) + 
-  facet_wrap(~station, ncol = 3, scales = 'free') +
-  theme(axis.text.x = element_blank(),
-        axis.title.x = element_blank(),
-        axis.ticks.x = element_blank())
+# Vector of arrival loads (needs to match a-e simulations in simulations.R)
+rpaArr <- c(rep(c(10, 35, 60, 85, 110), 1), rep(c(20, 70, 120, 170, 220), 1), rep(c(60, 120, 180, 240, 300), 1))
+gpArr <- c(rep(c(1, 2, 3, 4, 5), 1), rep(c(1, 2, 4, 6, 10), 1), rep(c(2, 4, 6, 8, 12), 1))
 
-```
+p1 <- queueTimesRPA %>% 
+         filter(test==1 & station == 'Total') %>% 
+         group_by(size, level) %>% 
+         summarise(mean = mean(mins)) %>% 
+         ungroup() %>% 
+         mutate(arr = rpaArr) %>% 
+         ggplot(aes(y=arr, x=mean)) + 
+         annotate('rect', xmin = 30, xmax = 60, ymin = 0, ymax = 300, fill = 'seagreen', alpha = 0.2) +  
+         geom_point(size = 1.5)  + 
+         facet_wrap(~size, ncol = 3, scales = 'free') + 
+         scale_x_continuous(' ', limits=c(0, 300), breaks = seq(0,300,50), labels = seq(0,300,50)) +
+         scale_y_continuous('Arrivals every\n60 minutes', breaks = scales::pretty_breaks(), limits=c(0, 300))
 
-## Daily thorughput for the baseline model
-```{r dailyThroughput, fig.align='center', fig.cap='Daily thorughput for the baseline model', fig.height=2.0, fig.width=6.5}
 
-queueTimes %>%
-  filter(size==30 & test==1 & level==1) %>%
-  filter(station == "Total") %>% 
-  group_by(iter) %>% 
-  summarise(tp = max(id)) %>% 
-  ggplot(aes(x=tp)) + 
-  geom_boxplot() + 
-  scale_x_continuous('Daily number of vaccinations') +
-  theme(axis.text.y = element_blank(),
-        axis.title.y = element_blank(),
-        axis.ticks.y = element_blank())
+
+p2 <- queueTimesGP %>% 
+         filter(test==1 & station == 'Total') %>% 
+         group_by(size, level) %>% 
+         summarise(mean = mean(mins)) %>% 
+         ungroup() %>% 
+         mutate(arr = gpArr) %>% 
+         ggplot(aes(y=arr, x=mean)) +  
+         annotate('rect', xmin = 30, xmax = 60, ymin = 0, ymax = 15, fill = 'seagreen', alpha = 0.2) + 
+         geom_point(size = 1.5)  + 
+         facet_wrap(~size, ncol = 3, scales = 'free') + 
+         scale_x_continuous('Total processing time (minutes)', limits=c(0, 300)) +
+         scale_y_continuous('Arrivals every\n10 minutes', breaks = scales::pretty_breaks(), limits=c(0, 15))
+
+ggpubr::ggarrange(p1, p2, ncol = 1, labels = c('A', 'B'), vjust = c(1.2, 0), hjust = -.2)
 
 ```
 
+Figure \ref{fig:processingTimes} presents the average processing time as the arrival frequency increases. When arrivals are set to their lowest value, all processing times are within between 30 and 60 minutes (the shaded band). In general, small increases to the average arrival rate have a negligible impact on the overall processing time. However, once a certain threshold is reached, the processing time quickly escalates. For both mass vaccination hubs and GP vaccination clinics, the critical threshold is lower in venues with relatively low staffing and higher in venues with relatively high staffing, a point we will return to later. 
+
+Figure \ref{fig:staffUtilisation} presents the corresponding staff utilisation for the Vaccination station, which was chosen as an example because it is common to both the mass vaccination hub and the GP vaccination clinic. Utilisation for the other stations are not presented but display similar patterns.
+
+```{r staffUtilisation, fig.align='center', fig.cap='Average staff utilisation by arrival frequency for a mass vaccination hub (A) and a GP vaccination clinic (B)', fig.height=3.5, fig.width=6.5}
+
+# Vector of arrival loads (needs to match a-e simulations in simulations.R)
+rpaArr <- c(rep(c(10, 35, 60, 85, 110), 1), rep(c(20, 70, 120, 170, 220), 1), rep(c(60, 120, 180, 240, 300), 1))
+gpArr <- c(rep(c(1, 2, 3, 4, 5), 1), rep(c(1, 2, 4, 6, 10), 1), rep(c(2, 4, 6, 8, 12), 1))
+
+p1 <- utilTimesRPA %>% 
+   filter(test==1 & station =='Vaccination') %>% 
+   group_by(size, station, level) %>% 
+   summarise(mean = mean(util))  %>% 
+   ungroup() %>% 
+   mutate(arr = rpaArr) %>% 
+   ggplot(aes(y=arr, x=mean)) + 
+      annotate('rect', xmin = 0.5, xmax = 0.7, ymin = 0, ymax = 300, fill = 'seagreen', alpha = 0.2) + 
+      geom_point(size = 1.5) + 
+      facet_wrap(~size, ncol = 3, scales = 'free_y') + 
+      scale_x_continuous(' ', limits=c(0, 1), breaks = seq(0,1,.2)) +
+      scale_y_continuous('Arrivals every\n60 minutes', limits=c(0, 300))
 
 
-## Baseline utilisation factor
-```{r baselineUtilisation, fig.align='center', fig.cap='Baseline staff utilisation factor', fig.height=2.0, fig.width=6.5}
-utilTimes %>% 
-  filter(test==1 & level == 1) %>% 
-  group_by(station, level, size) %>% 
-  summarise(mean = mean(util)) %>% 
-  ggplot(aes(y = station, x = mean)) + 
-  geom_vline(aes(xintercept = 0.5), color = 'green', alpha = .8) +
-  geom_vline(aes(xintercept = 0.75), color = 'red', alpha = .8) +
-  geom_point() + 
-  facet_wrap(~size, nrow = 1) + 
-  scale_y_discrete(NULL) + 
+p2 <- utilTimesGP %>% 
+   filter(test==1 & station =='Vaccination') %>% 
+   group_by(size, station, level) %>% 
+   summarise(mean = mean(util))  %>% 
+   ungroup() %>% 
+   mutate(arr = gpArr) %>% 
+   ggplot(aes(y=arr, x=mean)) + 
+   annotate('rect', xmin = 0.5, xmax = 0.7, ymin = 0, ymax = 15, fill = 'seagreen', alpha = 0.2) + 
+   geom_point(size = 1.5) + 
+   facet_wrap(~size, ncol = 3, scales = 'free_y') + 
+   scale_x_continuous('Staff utilisation factor', limits=c(0, 1), breaks = seq(0,1,.2)) +
+   scale_y_continuous('Arrivals every\n10 minutes', breaks = scales::pretty_breaks(), limits=c(0, 15))
+
+
+ggpubr::ggarrange(p1, p2, ncol = 1, labels = c('A', 'B'), vjust = c(1.2, 0), hjust = -.2)
+
+```
+
+As the arrival frequency increases, staff utilisation grows gradually. The shaded area indicates a staff utilisation factor between 0.5 and 0.7. Beyond this level, utilisation rapidly increases as arrivals increase. 
+
+These results emphasise the delicate balance between arrival frequency, staff utilisation and processing times. If arrivals are two low, processing times will be at an acceptable level but available the available staff will be under-utilised. As arrivals increase, processing times and staff utilisation increase accordingly, however if the rate of arrivals grows too high staff utilisation passes a critical threshold and processing times expand beyond reasonable levels. 
+
+Based on this calibration exercise, we specified the number of arrivals such that the average processing times remained under an hour, and the staff utilisation did not exceed 0.7 for any station. The resulting arrival frequencies are presented in Table \ref{tab:arrivalFreq}.
+
+```{r}
+
+df <- data.frame(
+   
+   size = rep(c('low', 'medium', 'high'), 2),
+   interval = c(rep('60 minutes', 3), rep('10 minutes', 3)),
+   arrivals = c(60, 120, 180, 2, 4, 6)
+
+)
+
+kbl(df,
+    format = 'latex',
+    booktabs = TRUE,
+    col.names = c('Size', 'Appointment interval', 'Arrivals per interval'),
+    digits = 1,
+    caption = "Arrival frequency by station for low, medium and high staffing availability",
+    label = 'arrivalFreq',
+    align = c('lrr')
+) %>%
+   column_spec(1, width = '4cm') %>% 
+   column_spec(2, width = '2cm') %>% 
+   column_spec(3, width = '2cm') %>% 
+   group_rows("Mass vaccination hub", 1, 3, indent = FALSE) %>%
+   group_rows("GP vaccination clinic", 4, 6, indent = FALSE) %>%
+   kable_styling(latex_options =  c("striped", "hold_position"), 
+                 full_width = FALSE, 
+                 position = "center")
+
+```
+
+
+The chosen arrival frequencies were selected to increase linearly across the low, medium and high staffing models: arrivals for the mass vaccination hub were set at 60, 120 and 180 arrivals per hour at relatively low, medium and high staffed hubs; arrivals for GP clinics were set at 2, 4, and 6 arrivals per 10 minutes. Scaling the arrivals and staffing in this way ensured that the baseline staff utilisation and processing times remained constant across all models within the given queue network (see Figure \ref{fig:baselineProcessingTimes} and Figure \ref{fig:baselineUtilisation}). This equivalence facilitates comparisons between hub sizes within the two queue networks. 
+
+```{r baselineUtilisation, fig.align='center', fig.cap='Baseline staff utilisation factor for mass vaccination hubs (A) and GP vaccination clinics (B)', fig.height=3.0, fig.width=6.5}
+p1 <- utilTimesRPA %>%
+  filter(test==2 & level == 1) %>%
+  group_by(station, level, size) %>%
+  summarise(mean = mean(util)) %>%
+  ggplot(aes(y = station, x = mean)) +
+  annotate('rect', xmin = 0.5, xmax = 0.7, ymin = 0.5, ymax = 5.5, fill = 'seagreen', alpha = 0.2) + 
+  geom_point(size = 2) +
+  facet_wrap(~size, nrow = 1) +
+  scale_y_discrete(NULL, limits = rev(levels(utilTimesRPA$station))) +
   scale_x_continuous("Average staff utilisation factor", labels = c('0', "", '.5', '', '1'), limits = c(0,1), breaks = seq(0,1,.25))
+
+p2 <- utilTimesGP %>%
+  filter(test==2 & level == 1) %>%
+  group_by(station, level, size) %>%
+  summarise(mean = mean(util)) %>%
+  filter(station %in% c('Preparation', 'Registration', 'Vaccination')) %>%
+  ggplot(aes(y = station, x = mean)) +
+  annotate('rect', xmin = 0.5, xmax = 0.7, ymin = 0.5, ymax = 3.5, fill = 'seagreen', alpha = 0.2) +
+  geom_point(size = 2) +
+  facet_wrap(~size, nrow = 1) +
+  scale_y_discrete(NULL, limits = c('Vaccination', 'Registration', 'Preparation')) +
+  scale_x_continuous("Average staff utilisation factor", labels = c('0', "", '.5', '', '1'), limits = c(0,1), breaks = seq(0,1,.25))
+
+ggpubr::ggarrange(p1, p2, ncol = 1, labels = c('A', 'B'), vjust = c(1.2, 0), hjust = -.2)
+
 ```
 
+ The corresponding arrival frequencies are presented in Table \ref{tab:arrivalFreqs}.
 
-## Baseline processing time
-```{r baselineProcessTime, fig.align='center', fig.cap='Baseline processing time', fig.height=2.0, fig.width=6.5}
+```{r baselineProcessingTimes, fig.align='center', fig.cap='Baseline processing times for the mass vaccination hub (A) and GP vaccination clinic (B)', fig.height=3.5, fig.width=6.5}
 # Save median queue time across all sites
-medianqTime <- queueTimes %>% 
-  filter(test==1 & level == 1 & station=='Total') %>% 
-  summarise(t = median(mins)) %>% 
+medianqTime1 <- queueTimesRPA %>%
+  filter(test==2 & level == 1 & station=='Total') %>%
+  summarise(t = median(mins)) %>%
   as.numeric()
 
-queueTimes %>% 
-  filter(test==1 & level == 1 & station=='Total') %>% 
-  ggplot(aes(y = mins, x = 1)) + 
-  geom_hline(aes(yintercept = medianqTime), color = 'blue', size = 3, alpha = 0.2) +
-  geom_boxplot() + 
-  facet_wrap(~size, nrow = 1) + 
-  scale_x_discrete(NULL) + 
-  scale_y_continuous("Processing time (minutes)", limits = c(0, 100))
+p1 <- queueTimesRPA %>%
+  filter(test==2 & level == 1 & station=='Total') %>%
+  ggplot(aes(y = mins, x = 1)) +
+  geom_hline(aes(yintercept = medianqTime1), color = 'seagreen', size = 1.2, alpha = 0.2) +
+  geom_boxplot() +
+  facet_wrap(~size, nrow = 1) +
+  scale_x_discrete(NULL) +
+  scale_y_continuous("Processing time\n(minutess)", limits = c(0, 100), breaks = seq(0, 100, 20))
+
+medianqTime2 <- queueTimesGP %>%
+  filter(test==2 & level == 1 & station=='Total') %>%
+  summarise(t = median(mins)) %>%
+  as.numeric()
+
+p2 <- queueTimesGP %>%
+  filter(test==2 & level == 1 & station=='Total') %>%
+  ggplot(aes(y = mins, x = 1)) +
+  geom_hline(aes(yintercept = medianqTime2), color = 'seagreen', size = 1.2, alpha = 0.2) +
+  geom_boxplot() +
+  facet_wrap(~size, nrow = 1) +
+  scale_x_discrete(NULL) +
+  scale_y_continuous("Processing time\n(minutes)", limits = c(0, 60), breaks = seq(0, 60, 20))
+
+ggpubr::ggarrange(p1, p2, ncol = 1, labels = c('A', 'B'), vjust = c(1.2, 0), hjust = -.2)
+
+
 ```
 
-## Throughput across larger sites
-```{r baselineThroughput, fig.align='center', fig.cap='Baseline processing time', fig.height=4.0, fig.width=6.5}
-queueTimes %>% 
-  filter(test==1 & level == 1 & station=='Total') %>% 
-  group_by(size, iter) %>% 
-  summarise(n = max(id)) %>% 
-  ggplot(aes(x = size, y = n)) + 
-  geom_jitter(width = 1, shape = 1, color = 'grey40') +
-  geom_smooth(method = 'lm') +
-  scale_x_continuous('Healthcare staff numbers') + 
-  scale_y_continuous('Number of vaccinations per day', limits = c(0, NA), labels = scales::comma)
+Te results in Figures \ref{fig:baselineProcessingTimes} and \ref{fig:baselineUtilisation} illustrate that for both mass vaccination hubs and GP clinics, the staff utilisation and processing times are stable regardless of the staffing capacity. This equivalence is important for the upcoming stress tests, because it means the different models are starting from the same baseline in terms of queue performance. 
+
+## Daily throughput
+
+Based on the calibrated baseline models, we can now estimate the number of daily vaccinations possible at different site capacities while maintaining processing times and staff utilisation within reasonable limits. The results are presented in Figure \ref{fig:baselineThroughput}.
+
+```{r baselineThroughput, fig.align='center', fig.cap='Baseline processing time for mass vaccination hubs (A) and GP vaccination clinics (B)', fig.height=3.5, fig.width=6.5}
+p1 <- queueTimesRPA %>%
+      filter(test==2 & level == 1 & station=='Total') %>%
+      group_by(size, iter) %>%
+      summarise(n = max(id)) %>%
+      ggplot(aes(x = size, y = n)) +
+      geom_jitter(width = 1, shape = 1, color = 'grey40') +
+      geom_smooth(method = 'lm') +
+      scale_x_continuous(' ', breaks = c(21, 42, 63)) +
+      scale_y_continuous('Daily\nvaccinations', limits = c(0, 1500), labels = scales::comma)
+
+p2 <- queueTimesGP %>%
+      filter(test==2 & level == 1 & station=='Total') %>%
+      group_by(size, iter) %>%
+      summarise(n = max(id)) %>%
+      ggplot(aes(x = size, y = n)) +
+      geom_jitter(width = 0.3, shape = 1, color = 'grey40') +
+      geom_smooth(method = 'lm') +
+      scale_x_continuous('Healthcare staff numbers', limits = c(3.8, 12.2), breaks = c(4, 8, 12)) +
+      scale_y_continuous('Daily\nvaccinations', limits = c(0, 300), labels = scales::comma)
+
+ggpubr::ggarrange(p1, p2, ncol = 1, labels = c('A', 'B'), vjust = c(1.2, 0), hjust = -.2)
+
 ```
 
-## Increase in processing time with increased arrivals by site size
-```{r processingTimeTest, fig.align='center', fig.cap='Increase in processing time with increased arrivals by site size', fig.height=4.0, fig.width=6.5}
-queueTimes %>% 
-  filter(test==3 & station=='Total') %>% 
-  ggplot(aes(x = factor(size), y = mins, fill = factor(level))) + 
-  geom_boxplot(outlier.shape = NA) +
-  scale_x_discrete('Number of healthcare staff') + 
-  scale_y_continuous('Total processing time (minutes)', limits = c(0, NA)) +
-  scale_fill_discrete('Arrivals\nincrease', label = c('+0%', '+10%', '+20%', '+30%', '+40%'))
+The results show that, while holding queue performance metrics constant, the number of daily vaccinations scales linearly with increasing healthcare staff for both the mass vaccination hub and GP vaccination clinic. The potential throughput for an eight hour clinic at a mass vaccination hubs, the daily throughput ranged from around 500 dose for a relatively small hub to 1,400 vaccinations a day for a relatively hub. For GP vaccination clinics, the estimated daily throughput ranged from about 100 vaccinations a day for a relatively small practice to almost 300 a day for a relatively large practice.
+
+## Stress tests
+
+In this section, we apply two stress tests to our baseline models. The first test was to gradually increase arrivals which could reflect efforts to increase throughput with the same staffing levels. This could arise if the production of vaccine doses increased. The second stress test was to gradually decrease staff numbers, which could reflect inevitable fluctuations in staff availability due to illness etc, or healthcare staff having to attend to a medical emergency. 
+
+### Increasing arrivals
+
+Figure \ref{fig:processingTimeTest} presents the average processing time based on incrementing the arrival frequency from the levels set for the baseline models. For mass vaccination hubs and GP clinics, increasing the number of arrivals results in increased processing times. However, the rate of increase in processing times is larger for sites with relatively low healthcare staff compared to sites with relatively high healthcare staffing.
+
+```{r processingTimeTest, fig.align='center', fig.cap='Increase in processing time with increased arrivals by site size for mass vaccination hubs (A) and GP vaccination clinics (B)', fig.height=4.0, fig.width=6.5}
+p1 <- queueTimesRPA %>%
+      filter(test==3 & station=='Total') %>%
+      ggplot(aes(x = factor(size), y = mins, fill = factor(level))) +
+      geom_boxplot(outlier.shape = NA) +
+      scale_x_discrete('Number of healthcare staff') +
+      scale_y_continuous('Total processing\ntime (minutes)', limits = c(0, NA)) +
+      scale_fill_brewer('Arrivals\nincrease\n(per hour)', 
+                        label = c('+0', '+10', '+20', '+30', '+40'),
+                        palette = 'Purples')
+
+p2 <- queueTimesGP %>%
+      filter(test==3 & station=='Total') %>%
+      ggplot(aes(x = factor(size), y = mins, fill = factor(level))) +
+      geom_boxplot(outlier.shape = NA) +
+      scale_x_discrete('Number of healthcare staff') +
+      scale_y_continuous('Total processing\ntime (minutes)', limits = c(0, NA)) +
+      scale_fill_brewer('Arrivals\nincrease\n(10 mins)', 
+                        label = c('+0', '+1', '+2', '+3', '+4'),
+                        palette = 'Reds')
+
+ggpubr::ggarrange(p1, p2, ncol = 1, labels = c('A', 'B'), vjust = c(1.2, 0), hjust = -.2)
+
 ```
 
-## Increase in processing time with delays to registration time
-```{r registrationTimeTest, fig.align='center', fig.cap='Increase in processing time with increased arrivals by site size', fig.height=4.0, fig.width=6.5}
-queueTimes %>% 
-  filter(test==1 & station=='Total') %>% 
-  ggplot(aes(x = factor(size), y = mins, fill = factor(level))) + 
-  geom_boxplot(outlier.shape = NA) +
-  scale_x_discrete('Number of healthcare staff') + 
-  scale_y_continuous('Total processing time (minutes)', limits = c(0, NA)) +
-  scale_fill_discrete('Arrivals\nincrease', label = c('+0%', '+10%', '+20%', '+30%', '+40%'))
+
+```{r staffShortageTest, fig.align='center', fig.cap='Increase in processing time with staff shortages by site size', fig.height=4.0, fig.width=6.5}
+p1 <- queueTimesRPA %>%
+      filter(test==2 & station=='Total') %>%
+      ggplot(aes(x = factor(size), y = mins, fill = factor(level))) +
+      geom_boxplot(outlier.shape = NA) +
+      scale_x_discrete(' ') +
+      scale_y_continuous('Total processing\ntime (minutes)', limits = c(0, NA)) +
+      scale_fill_brewer('Staff\nShortage', label = seq(0, 4, 1), palette = 'Purples')
+
+p2 <- queueTimesGP %>%
+      filter(sim %in% c('6', '7', '21', '22', '23', '24', '36', '37', '38', '39', '40'), station=='Total') %>%
+      ggplot(aes(x = factor(size), y = mins, fill = factor(level))) +
+      geom_boxplot(outlier.shape = NA) +
+      scale_x_discrete('Number of healthcare staff') +
+      scale_y_continuous('Total processing\ntime (minutes)', limits = c(0, NA)) +
+      scale_fill_brewer('Staff\nShortage', label = seq(0, 4, 1), palette = 'Reds')
+
+ggpubr::ggarrange(p1, p2, ncol = 1, labels = c('A', 'B'), vjust = c(1.2, 0), hjust = -.2)
+
 ```
+ 
+### Staff shortages
+
+Figure \ref{fig:staffShortageTest} presents the average processing time based on gradually decreasing the available staff for a given model. These results show that---unsurprisingly---small vaccination sites with limited staff numbers are quickly affected by staff shortages, whereas large vaccination hubs with more staff can still maintain queue performance with the same number of staff shortages. 
 
 # Discussion
+
+## Summary and discussion of main results 
+We have used queueing simulation methods to model the vaccination process based on two delivery approaches: a large mass vaccination hub and a small GP vaccination clinic. For each site, we calibrated the number of arrivals that could be vaccinated over an eight hour period while keeping two queue performance measures---staff utilisation and total processing time---constrained to reasonable levels. Our results provide estimates of potential daily throughput for these distinct vaccine delivery models across a range of staffing levels. Under our assumed service times, a relatively small GP clinic could perform around 100 vaccinations over an eight-hour clinic, while a relatively large mass vaccination hub could perform around 1,400 vaccinations over the same time period. Put differently, one large mass vaccination hub can achieve the same coverage as 14 GP small vaccination clinics. 
+
+These throughput estimates have reasonable face-validity. The mass vaccination hub trialled by NSW Health in a 2008 pandemic response planning exercise administered 498 vaccines in five hours using a queue network similar to our model delivered through a local school. The RPA Pfizer clinic has been delivering between 1,100 and 1,400 vaccinations per day throughout March. 
+
+Our models suggest that daily vaccination capacity scales linearly with staffing capacity while maintaining a constant queue performance. However, there are several other facets of the vaccine delivery process that are likely to offer economies of scale. For example, given the low incidence of adverse events, a high-capacity post vaccination area observation area could be overseen by a single staff member. Economies of scale area also likely for vaccine delivery as it may be more efficient and cost effective to coordinate a single delivery to one centralised hub rather than multiple deliveries to numerous smaller clinics. 
+
+By stressing our baseline models, we have shown that mass vaccination hubs are better placed to scale up daily throughput without increasing staff numbers and maintaining acceptable queue performance. Mass vaccination hubs are also are more resilient to staff shortages. 
+
+## Policy implications 
+To date, the Australian Government's approach to vaccine delivery has relied on hospital hubs to administer the Pfizer Vaccine to the highest priority phase, whereas delivery of subsequent phases is planned through smaller sites, including general practices, Aboriginal Controlled Community Health Services, and community pharmacies to administer the AstraZeneca vaccine to the bulk of the Australian population. There has been little emphasis on the use of mass vaccination hubs to be included in vaccination efforts, although previous pandemic planning exercises found this model to be effective, and it has been applied successfully in Australia (during the first vaccine phase) and overseas (ref to UK).
+
+[Other key points to be added]
+
+## Limitations 
+Our analysis does not account for essential staff who are not involved in the queueing process but do need to be considered when estimating staff requirements. Our models assume sufficiently available vaccine doses, and do not address the challenges of vaccine procurement or the logistics of delivering vaccine doses to the venues where they will of administered. The assumed queue networks rely on subjective assumptions of the distribution of service times at each station. We specified service times that had reasonable face-validity and produced realistic estimates of overall processing times. This could be improved in the future through a time-use survey to empirically estimate service time distributions for each station in a queue network. 
+ 
+## Conclusion 
+ 
+Stochastic queueing models can be used to simulate vaccination queues, estimate daily throughput based on given staff availability and inform service delivery. Different models of vaccine distribution have different benefits and challenges. Mass vaccination clinics offer a higher daily throughput and are more resilient to increased arrivals and decreased staff availability, however they require larger premises and higher staffing numbers. GP vaccination clinics can perform vaccinations at a similar rate per staff member compared to mass vaccination hubs, however it may be difficult to sustain a high throughput given existing workloads. A diverse profile of vaccination sites, drawing on the benefits of both distribution models, may help to maximise the daily vaccination rate and vaccinate the Australian population against COVID-19 as quickly as possible.  
+
+
 
 
 # Contributions
