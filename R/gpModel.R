@@ -30,7 +30,7 @@ gpModel = function(arrivals,
   
   ## Observational times
   obsTime <- ifelse(rbinom(n, 1, failP), 
-                    failFloor + rexp(100, failRate),
+                    failFloor + rexp(n, failRate),
                     rnorm(n, obsMean, obsSD))
   
   # Queue process
