@@ -46,7 +46,7 @@ arenaModel = function(arrivals,
   
   ## Observational times
   obsTime <- ifelse(rbinom(n, 1, failP), 
-                    failFloor + rexp(100, failRate),
+                    failFloor + rexp(n, failRate),
                     rnorm(n, obsMean, obsSD))
   
   ## Times to traverse between the stations
@@ -88,8 +88,8 @@ arenaModel = function(arrivals,
     ass = assFloor + rexp(largeN, assRate),
     vac = vacFloor + rexp(largeN, vacRate),
     obs = ifelse(rbinom(largeN, 1, failP), 
-                 failFloor + rexp(100, failRate),
-                 rnorm(n, obsMean, obsSD))
+                 failFloor + rexp(largeN, failRate),
+                 rnorm(largeN, obsMean, obsSD))
   ) %>%
     mutate(id = row_number())  %>% 
     tidyr::pivot_longer(cols = c(rsi, ent, reg, ass, vac, obs), names_to = 'station', values_to = 'mins')
@@ -97,7 +97,7 @@ arenaModel = function(arrivals,
   ## Code stations as a factor
   dfService$station <- factor(dfService$station, 
                               levels = c('rsi', 'ent', 'reg', 'ass', 'vac', 'obs'), 
-                              labels = c('Reconstitutuion', 'Entrance', 'Registration', 'Assessment', 'Vaccination', 'Observation'))
+                              labels = c('Preparation', 'Entrance', 'Registration', 'Assessment', 'Vaccination', 'Observation'))
   
   # Store the waiting times
   dfQueue <- data.frame(

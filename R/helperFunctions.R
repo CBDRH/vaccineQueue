@@ -2,23 +2,23 @@
 
 
 # Create a data frame of service times based on GP model output
-getServiceTime <- function(gpModelOutput){
-  map_df(gpModelOutput, ~tibble(id = .$serviceTime$id,
+getServiceTime <- function(modelOutput){
+  map_df(modelOutput, ~tibble(id = .$serviceTime$id,
                         station = .$serviceTime$station,
                         mins = .$serviceTime$mins), .id = "iter") 
 }
 
 # Create a data frame of queue times based on GP model output
-getQueueTime <- function(gpModelOutput){
-  map_df(gpModelOutput, ~tibble(id = .$qTime$id,
+getQueueTime <- function(modelOutput){
+  map_df(modelOutput, ~tibble(id = .$qTime$id,
                         station = .$qTime$station,
                         mins = .$qTime$mins), .id = "iter") 
 }
 
 
 # Create a data frame of queue times based on Arena model output
-getUtilTime <- function(arenaModelOutput){
-  map_df(arenaModelOutput, ~tibble(station = .$qLengths$station,
+getUtilTime <- function(modelOutput){
+  map_df(modelOutput, ~tibble(station = .$qLengths$station,
                                    nServers = .$nServers$nServers,
                                    qLengths = .$qLengths$qLengths,
                                    util = .$util$util), .id = "iter") 

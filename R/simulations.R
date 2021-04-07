@@ -15,6 +15,8 @@ source('R/gpModel.R')
 source('R/arrivals.R')
 source('R/helperFunctions.R')
 
+# Set seed
+set.seed(498)
 
 # Set the number of simulations for each scenario
 simN <- 20

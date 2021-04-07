@@ -58,8 +58,8 @@ gpModel = function(arrivals,
     reg = regFloor + rexp(largeN, regRate),
     vac = vacFloor + rexp(largeN, vacRate),
     obs = ifelse(rbinom(largeN, 1, failP), 
-                 failFloor + rexp(100, failRate),
-                 rnorm(n, obsMean, obsSD))
+                 failFloor + rexp(largeN, failRate),
+                 rnorm(largeN, obsMean, obsSD))
   ) %>%
   mutate(id = row_number())  %>% 
   tidyr::pivot_longer(cols = c(rsi, reg, vac, obs), names_to = 'station', values_to = 'mins')
