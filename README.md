@@ -5,8 +5,9 @@ COVID-19 population vaccination programs are underway globally. In Australia, th
 
 ## Links
 * View and download the latest version of the paper from [medRxiv](https://doi.org/10.1101/2021.04.07.21255067)
-* Download the paper from [GitHub](https://github.com/CBDRH/vaccinatingAustralia/raw/main/researchNote/researchNote.pdf) 
+* Download the paper from [GitHub](https://github.com/CBDRH/vaccineQueue/blob/main/Preprint/Preprint.pdf) 
 * Article in [The Conversation](https://theconversation.com/drafts/158519/) 
+* [Interactive web app](https://cbdrh.shinyapps.io/queueSim/) which allows further exploration of these vaccination facility simulations 
 * Public data on the rate of daily vaccinations from [ourworldindata.org](https://github.com/owid/covid-19-data/tree/master/public/data/vaccinations)
 
 ## Suggested citation
