@@ -6,7 +6,7 @@ COVID-19 population vaccination programs are underway globally. In Australia, th
 ## Links
 * View and download the latest version of the paper from [medRxiv](https://doi.org/10.1101/2021.04.07.21255067)
 * Download the paper from [GitHub](https://github.com/CBDRH/vaccineQueue/blob/main/Preprint/Preprint.pdf) 
-* Article in [The Conversation](https://theconversation.com/drafts/158519/) 
+* Article in [The Conversation](https://theconversation.com/australian-vaccine-rollout-needs-all-hands-on-deck-after-the-latest-astrazeneca-news-mass-vaccination-hubs-included-158519) 
 * [Interactive web app](https://cbdrh.shinyapps.io/queueSim/) which allows further exploration of these vaccination facility simulations 
 
 ## Suggested citation
