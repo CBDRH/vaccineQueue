@@ -6,7 +6,7 @@ COVID-19 population vaccination programs are underway globally. In Australia, th
 ## Links
 * View and download the latest version of the paper from [medRxiv](https://doi.org/10.1101/2021.04.07.21255067)
 * Download the paper from [GitHub](https://github.com/CBDRH/vaccineQueue/blob/main/Preprint/Preprint.pdf) 
-* Article in [The Conversation](https://theconversation.com/drafts/158519/) 
+* Article in [The Conversation](https://theconversation.com/australian-vaccine-rollout-needs-all-hands-on-deck-after-the-latest-astrazeneca-news-mass-vaccination-hubs-included-158519) 
 * [Interactive web app](https://cbdrh.shinyapps.io/queueSim/) which allows further exploration of these vaccination facility simulations 
 
 ## Suggested citation
@@ -14,4 +14,9 @@ Mark J Hanly, Tim Churches, Oisín Fitzgerald, Ian Caterson, Chandini Raina MacI
 Modelling vaccination capacity at mass vaccination hubs and general practice clinics
 medRxiv 2021.04.07.21255067; doi: https://doi.org/10.1101/2021.04.07.21255067
 
+This research was supported by the generous assistance of Ian Sharp, philanthropic supporter of UNSW research, and by a research seed grant provided by the [Sydney Partnership for Health, Education, Research and Enterprise (SPHERE) 
+                            Infectious diseases, Immunity and Inflammation (Triple-I) Clinical Academic Group](https://www.thesphere.com.au/work/infectious-disease-immunity-and-inflammation-triple-i)
+                            
+## Acknowledgement of Country
+The Wangal, Bedegal and Gadigal people of the Eora Nation are the traditional owners of the land on which this work was undertaken. We acknowledge and pay our respects to their Elders, both past, present and emerging.
 ***
