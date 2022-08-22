@@ -14,8 +14,8 @@
 \usepackage{lipsum}
 \usepackage{graphicx}
 
-\title{Modelling vaccination capacity at mass vaccination clinic hubs and
-general practice clinics}
+\title{Modelling vaccination capacity at mass vaccination hubs and general
+practice clinics}
 
 \author{
     Mark Hanly
@@ -111,8 +111,8 @@ will be distributed primarily through a network of general practices, to
 be joined in later phases by community pharmacies. It remains unclear
 whether these small distribution venues have the logistical capacity to
 administer vaccines at the rate they will become available. To inform
-this discussion, we applied queue network models to estimate the
-capacity of vaccination sites based on assumptions about appointment
+this discussion, we applied stochastic queue network models to estimate
+the capacity of vaccination sites based on assumptions about appointment
 schedules, service times and available staff numbers. We specified
 distinct queueing models for two delivery modes: (i) mass vaccination
 hubs located in hospitals or sports arenas and (ii) smaller clinics
@@ -125,7 +125,7 @@ ranged from about 100 vaccinations a day for a relatively small practice
 to almost 300 a day for a relatively large practice. Stress tests showed
 that for both delivery modes, sites with higher staff numbers were more
 robust to system pressures, such as increased arrivals or staff
-shortages, and mass vaccination sites were more robust that GP clinics.
+absences, and mass vaccination sites were more robust that GP clinics.
 Our analysis is accompanied by an interactive web-based queue simulation
 applet, which allows users to explore queue performance under their own
 assumptions regarding appointments, service times and staff
@@ -178,8 +178,8 @@ AstraZeneca vaccine, and roll-out of this vaccine to the second priority
 phase began in mid-March. The AstraZeneca vaccine can be stored in a
 standard vaccine refrigerator, allowing for distribution through general
 practitioners (GPs) and Community Pharmacies (CPs). In March, the TGA
-further approved the Pfizer vaccine to be stored in a standard freezer
-at -20\degree C, broadening the potential distribution venues.
+further approved storage of the Pfizer vaccine in a standard freezer at
+-20\degree C, broadening the potential distribution venues.
 
 The sustained number of vaccine doses administered per day is the key
 driver of achieving a high population coverage as quickly as possible.
@@ -197,34 +197,35 @@ What is less clear at this point in time is whether the logistical
 capacity exists to administer this number of doses at the rate they
 become available. The current roll-out plan centres on hospital hubs for
 Phase 1a and part of Phase 1b, private contractors and the Australian
-Defence Force for aged care facilities, and selected GPs and CPs fo the
+Defence Force for aged care facilities, and selected GPs and CPs for the
 balance of the population. Initial reports suggest that more than 4,500
 accredited GPs\textsuperscript{10} of a total of around 7,000 practices
 in Australia\textsuperscript{11} will participate in the second phase of
 the roll-out, with an as-yet-unknown number of CPs expected to join the
 distribution efforts for subsequent phases. Distribution through local
 GPs and CPs offers many benefits. Australian GPs are the main provider
-of the National Immunisation Program for other vaccines and are well set
-up to deliver vaccination. CPs have been providing influenza vaccine for
-the past five years in different states. These primary healthcare venues
-have the advantage of drawing on existing networks and infrastructure,
-and will be convenient and familiar for patients. However, the potential
-capacity of GPs and CPs is limited by physical space, available staff
-and by the initial limited and variable vaccine supply, with current
-supplies of 50 - 100 doses a week being provided to GPs, who may have
-over 2000 eligible patients wanting vaccination. Another major limiting
-factor is that GPs and CPs must also maintain their usual workloads in
-addition to running vaccination clinics.
+of the National Immunisation Program for other vaccines and are thus
+well set up to deliver vaccinations. CPs have been administering
+influenza vaccine for the past five years in different states. These
+primary healthcare venues have the advantage of drawing on existing
+networks and infrastructure, and will be convenient and familiar for
+patients. However, the potential capacity of GPs and CPs is limited by
+physical space, available staff and by the initial limited and variable
+vaccine supply, with current supplies of 50 - 100 doses a week being
+provided to GPs, who may have over 2000 eligible patients wanting
+vaccination. Another major limiting factor is that GPs and CPs must also
+maintain their usual workloads in addition to running vaccination
+clinics.
 
 Centralised mass vaccination hubs delivered at larger venues such as
 schools, conference centres or sports arenas present a potential
 delivery mode to complement smaller local vaccination sites. Previous
-planning exercises\textsuperscript{12} and recent experience in
-delivering the Pfizer vaccine at scale through hospital hubs has shown
-that mass vaccination sites can administer a high number of daily
-vaccinations and sustain this rate of distribution. While offering a
-higher daily throughput, these larger hubs do require more staff and
-larger premises to deliver at-scale.
+mass vaccination field exercises\textsuperscript{12} and recent
+experience in delivering the Pfizer vaccine at scale through hospital
+hubs has shown that mass vaccination sites can administer a high number
+of daily vaccinations and sustain this rate of distribution. While
+offering a higher daily throughput, these larger hubs do require more
+staff and larger premises to deliver at-scale.
 
 In this analysis, we model the potential vaccination capacity of smaller
 GP- or CP-based local vaccination clinics and larger school- or
@@ -238,7 +239,7 @@ vaccinations in Australia and internationally.
 \hypertarget{queueing-theory}{%
 \subsection{Queueing Theory}\label{queueing-theory}}
 
-Queueing is ubiquitous phenomenon which we encounter on a day-to-day
+Queueing is a ubiquitous phenomenon which we encounter on a day-to-day
 basis at shops, airports, train stations and call centres. Queueing
 theory is a statistical representation of this everyday process. The
 most basic queue can be characterised by three components: the rate of
@@ -250,16 +251,16 @@ be low. If arrivals are frequent, the service time is long or the number
 of servers too few (e.g.~at an airport on the first day of holidays)
 then waiting times will increase as will the average queue length.
 Queueing theory offers a way to improve this experience for the customer
-and for the server by modeeling the queueing process and understanding
+and for the server by modelling the queueing process and understanding
 the balance between these factors. Models of the queueing process
 represent arrival and service times as stochastic processes. For
 example, the number of new customers joining a queue in a given period
-can be modelled as a Poission Process, or alternatively inter-arrival
-times can be modelling as an exponential distribution. The aim is to
-then estimate the characteristics of the queue, such as average waiting
-time and queue lengths given a fixed numbers of servers, or to estimate
-the number of servers required to keep waiting times at a desired level
-given likely service times and arrivals.
+can be modelled as a Poission process, or alternatively inter-arrival
+times can be modelled as an exponential distribution. The aim is then to
+estimate the characteristics of the queue, such as average (median)
+waiting time and queue lengths given a fixed numbers of servers, or to
+estimate the number of servers required to keep average waiting times at
+a desired level given likely service times and arrivals.
 
 Queue networks are formed by joining multiple queues together, either as
 a tandem network with an ordered series of queues, or a parallel
@@ -291,13 +292,14 @@ appointment schedule to keep these two metrics within reasonable limits,
 we estimated baseline daily throughput for each delivery mode. Finally,
 we performed two stress tests to explore how the different queue
 networks and staffing capabilities responded to system pressures, such
-as public health, social and political imperatives to speed up
+as public health, social and political imperatives to speed up vaccine
 administration. The first stress test was to gradually increase the
 number of appointments, reflecting capability to scale up daily
 throughput with the same number of staff. The second stress test was to
 gradually decrease available staff, reflecting staff shortages due to
-illness or an increase in competing demand for staff time caused by, for
-example, an outbreak of COVID-19 infection in the unvaccinated.
+illness or an increase in competing demands for staff time caused by,
+for example, an outbreak of COVID-19 infection in the unvaccinated
+resulting in a sudden increase in demand for nasal swab collections.
 
 \hypertarget{settings}{%
 \subsection{Settings}\label{settings}}
@@ -311,10 +313,11 @@ accommodate a high throughput of several hundred patients per day.
 Potential locations would need to have the necessary infrastructure to
 accommodate such throughput, including access to public transport,
 parking, disability access, bathrooms, facilities to monitor patients
-post-vaccination, and staff who manage adverse events including
-anaphylaxis in an appropriate treatment setting. Examples of settings
-that could potentially meet these criteria include hospitals, theatres,
-schools, university campuses, conference centres and sports stadiums.
+post-vaccination, and suitably trained and experienced staff who are
+on-hand to manage adverse events including anaphylaxis in an appropriate
+treatment setting. Examples of settings that could potentially meet
+these criteria include hospitals, theatres, schools, university
+campuses, conference centres and sports stadiums.
 
 \hypertarget{local-gp-vaccination-clinic}{%
 \subsubsection{Local GP vaccination
@@ -360,9 +363,9 @@ smaller versus larger sites.
   vials close to the time that they are administered. The preparation
   steps differ for different vaccines.
 \item
-  \textbf{Injection:} Administers the vaccine.
+  \textbf{Injection:} Administer the vaccine.
 \item
-  \textbf{Observation:} Monitored for any adverse reaction following
+  \textbf{Observation:} Monitor for any adverse reaction following
   vaccination.\\
 \item
   \textbf{Booking:} Book appointment to receive second vaccine dose.
@@ -372,14 +375,14 @@ smaller versus larger sites.
 \subsection{Proposed queue networks}\label{proposed-queue-networks}}
 
 Our proposed queue networks for the mass vaccination hub and GP
-vaccination clinic differ in the assumed layout of stations and how the
-tasks above are distributed across these stations. An overview of the
-two queue networks is presented in Figure \ref{fig:diagram} and these
-are described in more detail below. Each stage of the process is
-serviced by one or more ``servers'' --- that is, staff who undertake the
-actions required for that stage. Patients are serviced by the next
-available server on a first-come-first-serve basis, before moving on to
-the next station in the network.
+vaccination clinic differ in the layout of stations and how the tasks
+above are distributed across these stations. An overview of the two
+queue networks is presented in Figure \ref{fig:diagram} and these are
+described in more detail below. Each stage of the process is serviced by
+one or more \emph{servers} --- that is, staff who undertake the actions
+required for that stage. Patients are serviced by the next available
+server on a first-come-first-served basis, before moving on to the next
+station in the network.
 
 \begin{figure}
 
@@ -396,7 +399,7 @@ hub.}\label{queue-network-for-a-centralised-mass-vaccination-hub.}}
 
 The proposed queue network for a mass vaccination hub is modelled on the
 Phase 1a (Pfizer/BioNTech) vaccination hub based at the Royal Prince
-Albert (RPA) hospital in Sydney. In this queue network, patients
+Alfred Hospital (RPA) in Sydney. In this queue network, patients
 traverse five stations: Entrance, Registration, Assessment, Vaccination
 and Observation. The first four stations require the patient to wait for
 an available staff member so these are modelled as queues, with new
@@ -404,9 +407,9 @@ arrivals serviced by the next available staff member on a
 first-come-first-served basis. The observation stage does not require
 patients to wait for an available staff member so this stage is modelled
 as a stochastic lag period, with longer waits for a small proportion of
-individuals to reflect adverse reactions. Because mass vaccination sites
-require a large premises, the queue network also incorporates a short
-transition time between stations.
+individuals, reflecting adverse reactions. Because mass vaccination
+sites require a large premises, the queue network also incorporates a
+short transition time between stations.
 
 Vaccine doses must be prepared close to the time they are administered,
 and clearly delays to this process will result in delays at the
@@ -449,7 +452,7 @@ recorded.
 Having been given final clearance to receive the vaccine at the
 assessment station, patients join the queue for vaccination. Once a
 vaccinator becomes available, the patient can take a seat and expose
-their upper arm. The vaccinator confirms the patients name and details
+their upper arm. The vaccinator confirms the patient's name and details
 then administers the vaccine. The vaccinator applies a dressing to the
 vaccination site, notes the vaccination time on a sticker and applies
 this to the patient's shoulder or lapel.
@@ -478,7 +481,7 @@ Vaccines are delivered in multi-dose vials containing 5-6 doses (Pfizer)
 or 8-10 doses (AstraZeneca). The exact preparation steps will differ
 depending on the vaccine being prepared. Steps incorporated at this
 station may include logging the vial, visual inspection of the dose,
-reconstitution (for the Pfizer vaccine), and drawing the vaccine into
+reconstitution (for the Pfizer vaccine), and drawing up the vaccine into
 syringes.
 
 \hypertarget{queue-network-for-a-local-gp-vaccination-clinic}{%
@@ -538,7 +541,7 @@ For both the mass vaccination hub and GP vaccination clinic, the station
 service times were modelled as exponential processes with fixed minimum
 service times. Such exponential simulations reflect the typically
 observed situation of most patients taking a relatively short time to
-process, but with a ``long tail'' of some patients taking considerably
+process, but with a long ``tail'' of some patients taking somewhat
 longer, and a few taking a very long time. The exception is the
 observation station, which was modelled as bimodal distribution, with
 normally distributed observation times for patients who did not
@@ -561,20 +564,20 @@ Station & Form & Formula & 5\% & 25\% & 50\% & 75\% & 95\% & Distribution\\
 \midrule
 \addlinespace[0.3em]
 \multicolumn{9}{l}{\textbf{Arena model}}\\
-\cellcolor{gray!6}{Preparation} & \cellcolor{gray!6}{exponential} & \cellcolor{gray!6}{1 + exp(3)} & \cellcolor{gray!6}{1.0} & \cellcolor{gray!6}{1.1} & \cellcolor{gray!6}{1.2} & \cellcolor{gray!6}{1.4} & \cellcolor{gray!6}{2.0} & \cellcolor{gray!6}{\includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_1af9480384b6.pdf}}\\
-Entrance & exponential & 2 + exp(1) & 2.0 & 2.3 & 2.7 & 3.4 & 5.4 & \includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_1af970fe22f7.pdf}\\
-\cellcolor{gray!6}{Registration} & \cellcolor{gray!6}{exponential} & \cellcolor{gray!6}{3 + exp(0.7)} & \cellcolor{gray!6}{3.1} & \cellcolor{gray!6}{3.4} & \cellcolor{gray!6}{4.0} & \cellcolor{gray!6}{5.0} & \cellcolor{gray!6}{7.4} & \cellcolor{gray!6}{\includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_1af92c81c1d0.pdf}}\\
-Assessment & exponential & 2 + exp(1) & 2.0 & 2.3 & 2.6 & 3.3 & 4.7 & \includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_1af955cb4a78.pdf}\\
-\cellcolor{gray!6}{Vaccination} & \cellcolor{gray!6}{exponential} & \cellcolor{gray!6}{3 + exp(1)} & \cellcolor{gray!6}{3.1} & \cellcolor{gray!6}{3.3} & \cellcolor{gray!6}{3.7} & \cellcolor{gray!6}{4.3} & \cellcolor{gray!6}{5.9} & \cellcolor{gray!6}{\includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_1af91ed94ba9.pdf}}\\
-Observation & normal & norm(20, 0.5) & 19.8 & 19.9 & 20.0 & 20.1 & 20.2 & \includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_1af919094f0d.pdf}\\
-\cellcolor{gray!6}{Adverse reaction} & \cellcolor{gray!6}{exponential} & \cellcolor{gray!6}{20 + exp(0.1)} & \cellcolor{gray!6}{20.5} & \cellcolor{gray!6}{22.8} & \cellcolor{gray!6}{27.0} & \cellcolor{gray!6}{33.9} & \cellcolor{gray!6}{50.6} & \cellcolor{gray!6}{\includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_1af915d56e36.pdf}}\\
+\cellcolor{gray!6}{Preparation} & \cellcolor{gray!6}{exponential} & \cellcolor{gray!6}{1 + exp(3)} & \cellcolor{gray!6}{1.0} & \cellcolor{gray!6}{1.1} & \cellcolor{gray!6}{1.2} & \cellcolor{gray!6}{1.5} & \cellcolor{gray!6}{2.0} & \cellcolor{gray!6}{\includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_cbc646669edc.pdf}}\\
+Entrance & exponential & 2 + exp(1) & 2.0 & 2.3 & 2.6 & 3.4 & 5.0 & \includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_cbc61bc40cf4.pdf}\\
+\cellcolor{gray!6}{Registration} & \cellcolor{gray!6}{exponential} & \cellcolor{gray!6}{3 + exp(0.7)} & \cellcolor{gray!6}{3.1} & \cellcolor{gray!6}{3.4} & \cellcolor{gray!6}{3.9} & \cellcolor{gray!6}{4.8} & \cellcolor{gray!6}{7.2} & \cellcolor{gray!6}{\includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_cbc6261e73e1.pdf}}\\
+Assessment & exponential & 2 + exp(1) & 2.0 & 2.3 & 2.7 & 3.4 & 5.2 & \includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_cbc63c05abc4.pdf}\\
+\cellcolor{gray!6}{Vaccination} & \cellcolor{gray!6}{exponential} & \cellcolor{gray!6}{3 + exp(1)} & \cellcolor{gray!6}{3.1} & \cellcolor{gray!6}{3.3} & \cellcolor{gray!6}{3.7} & \cellcolor{gray!6}{4.4} & \cellcolor{gray!6}{5.9} & \cellcolor{gray!6}{\includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_cbc627fe461b.pdf}}\\
+Observation & normal & norm(20, 0.5) & 19.8 & 19.9 & 20.0 & 20.1 & 20.2 & \includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_cbc61216d5b6.pdf}\\
+\cellcolor{gray!6}{Adverse reaction} & \cellcolor{gray!6}{exponential} & \cellcolor{gray!6}{20 + exp(0.1)} & \cellcolor{gray!6}{20.5} & \cellcolor{gray!6}{22.6} & \cellcolor{gray!6}{27.1} & \cellcolor{gray!6}{34.7} & \cellcolor{gray!6}{50.6} & \cellcolor{gray!6}{\includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_cbc63c6f8d8e.pdf}}\\
 \addlinespace[0.3em]
 \multicolumn{9}{l}{\textbf{GP model}}\\
-Preparation & exponential & 1 + exp(2) & 1.0 & 1.1 & 1.2 & 1.4 & 2.0 & \includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_1af96ce8357e.pdf}\\
-\cellcolor{gray!6}{Registration} & \cellcolor{gray!6}{exponential} & \cellcolor{gray!6}{1 + exp(3)} & \cellcolor{gray!6}{3.1} & \cellcolor{gray!6}{3.3} & \cellcolor{gray!6}{3.8} & \cellcolor{gray!6}{4.5} & \cellcolor{gray!6}{6.1} & \cellcolor{gray!6}{\includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_1af9486034ad.pdf}}\\
-Vaccination & exponential & 1 + exp(3) & 5.1 & 5.6 & 6.5 & 7.7 & 11.1 & \includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_1af950a3f19e.pdf}\\
-\cellcolor{gray!6}{Observation} & \cellcolor{gray!6}{normal} & \cellcolor{gray!6}{norm(20, 0.5)} & \cellcolor{gray!6}{19.2} & \cellcolor{gray!6}{19.7} & \cellcolor{gray!6}{20.0} & \cellcolor{gray!6}{20.3} & \cellcolor{gray!6}{20.8} & \cellcolor{gray!6}{\includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_1af973c3b72b.pdf}}\\
-Adverse reaction & exponential & 20 + exp(0.1) & 20.5 & 22.6 & 26.4 & 33.1 & 48.8 & \includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_1af92feb64e5.pdf}\\
+Preparation & exponential & 1 + exp(2) & 1.0 & 1.1 & 1.2 & 1.5 & 2.0 & \includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_cbc667bd86b4.pdf}\\
+\cellcolor{gray!6}{Registration} & \cellcolor{gray!6}{exponential} & \cellcolor{gray!6}{1 + exp(3)} & \cellcolor{gray!6}{3.1} & \cellcolor{gray!6}{3.3} & \cellcolor{gray!6}{3.7} & \cellcolor{gray!6}{4.4} & \cellcolor{gray!6}{5.8} & \cellcolor{gray!6}{\includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_cbc620de8ed.pdf}}\\
+Vaccination & exponential & 1 + exp(3) & 5.1 & 5.6 & 6.5 & 7.9 & 11.3 & \includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_cbc61c41266e.pdf}\\
+\cellcolor{gray!6}{Observation} & \cellcolor{gray!6}{normal} & \cellcolor{gray!6}{norm(20, 0.5)} & \cellcolor{gray!6}{19.2} & \cellcolor{gray!6}{19.7} & \cellcolor{gray!6}{20.0} & \cellcolor{gray!6}{20.4} & \cellcolor{gray!6}{20.8} & \cellcolor{gray!6}{\includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_cbc65fb5884a.pdf}}\\
+Adverse reaction & exponential & 20 + exp(0.1) & 20.4 & 22.7 & 26.8 & 34.0 & 51.2 & \includegraphics[width=0.67in, height=0.17in]{Preprint_files/figure-latex//hist_cbc65538f245.pdf}\\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -648,15 +651,16 @@ high & 3 & * & 3 & * & 6 & 12\\
 \end{table}
 
 Note that the total staffing numbers given in Table \ref{tab:staffing}
-only include staffing requirements for the stations in the assumed queue
-network that imply a queueing process and do not cover all staffing
-needs to successfully run a vaccination clinic. For example, the staff
-needed to oversee the observation station are not included because
-patients do not have to queue up to be serviced at this station. Also
-not included here are other support staff, such as supervisors,
-cleaners, marshals and caterers. The number and type of support staff
-required will vary depending on the size of the vaccination hub, and
-must also be taken into account when planning vaccine distribution.
+only include staffing requirements for the stations in the modelled
+queue network that represent a queueing process, and thus do not cover
+all staffing needs to successfully run a vaccination clinic. For
+example, the staff needed to oversee the observation station are not
+included because patients do not have to queue up to be serviced at this
+station. Also not included here are other essential support staff, such
+as supervisors, cleaners, marshals and caterers. The number and type of
+support staff required will vary depending on the size of the
+vaccination hub, and must also be taken into account when planning
+vaccine distribution.
 
 \hypertarget{queue-performance}{%
 \subsection{Queue performance}\label{queue-performance}}
@@ -667,15 +671,15 @@ is the total time from start to finish of the queue network. Staff
 utilisation is the average proportion of staff that are busy across the
 simulation run. An established property of queueing models is that queue
 performance rapidly degrades as staff utilisation exceeds
-80\%.{[}little1961proof{]}
+80\%.\textsuperscript{15}
 
 \hypertarget{software-and-code}{%
 \subsection{Software and code}\label{software-and-code}}
 
-The analysis was performed using R version 4.0.3\textsuperscript{15} and
-associated packages.\textsuperscript{16} Queueing models were simulated
-using the \texttt{queuecomputer} package.{[}ebert2017computationally{]}
-The complete source code to reproduce this analysis can be accessed at
+The analysis was performed using R version 4.0.3\textsuperscript{16} and
+associated packages.\textsuperscript{17} Queueing models were simulated
+using the \texttt{queuecomputer} package.\textsuperscript{14} The
+complete source code to reproduce this analysis can be accessed at
 \url{https://github.com/CBDRH/vaccineQueueNetworks}.
 
 \hypertarget{results}{%
@@ -696,8 +700,8 @@ setting, the frequency of arrivals is increased gradually. For example,
 for the mass vaccination site with low staffing numbers, the frequency
 of arrivals was increased from 10 per hour to 110 per hour, in
 increments of 25. For each of the six resulting models, the average
-processing time and staff utilisation across 20 simulation runs are
-presented in Figure \ref{fig:processingTimes} and
+(median) processing time and staff utilisation across 20 simulation runs
+are presented in Figure \ref{fig:processingTimes} and
 \ref{fig:staffUtilisation} respectively.
 
 \begin{figure}
@@ -717,8 +721,8 @@ have a negligible impact on the overall median processing time. However,
 once a certain threshold is reached, the median processing time quickly
 escalates. For both mass vaccination hubs and GP vaccination clinics,
 the critical threshold is lower in venues with relatively low staffing
-and higher in venues with relatively high staffing, a point we will
-return to later.
+and higher in venues with relatively high staffing, a point to which we
+shall return later.
 
 Figure \ref{fig:staffUtilisation} presents the corresponding arithmetic
 mean staff utilisation for the Vaccination station, which was chosen as
@@ -848,11 +852,11 @@ In this section, we apply two stress tests to our baseline models. The
 first test was to gradually increase arrivals, which could reflect
 efforts to increase throughput with the same staffing levels. This could
 arise if the production of vaccine doses increased or there were other
-imperatives, such as a large-scale COVID-19 outbreak. The second stress
-test was to gradually decrease staff numbers, which could reflect
-inevitable fluctuations in staff availability due to illness etc, or
-healthcare staff having to attend to a medical emergencies or routine
-duties.
+sudden imperatives to accelerate vacccination, such as a large-scale
+COVID-19 outbreak. The second stress test was to gradually decrease
+staff numbers, which could reflect inevitable fluctuations in staff
+availability due to illness etc, or healthcare staff having to attend to
+a medical emergencies (including COVID-19 outbreaks) or routine duties.
 
 \hypertarget{increasing-arrivals}{%
 \subsubsection{Increasing arrivals}\label{increasing-arrivals}}
@@ -861,7 +865,7 @@ Figure \ref{fig:processingTimeTest} presents the median processing time
 based on incrementing the arrival frequency from the levels set for the
 baseline models. For mass vaccination hubs and GP clinics, increasing
 the number of arrivals results in increased processing times. However,
-the rate of increase in processing times is larger for sites with
+the rate of increase in processing times is steeper for sites with
 relatively low healthcare staff compared to sites with relatively high
 healthcare staffing.
 
@@ -901,15 +905,15 @@ To accompany the analysis presented here, we have developed an
 interactive web-based queue simulation applet. This applet provides a
 graphical user interface to the mass vaccination and GP clinic queueing
 networks estimated with the R package \texttt{queuecomputer}. On
-launching the applet, the results from two default models are presented.
-These models have been parameterised to reflect the medium-sized
-baseline model presented here, i.e.~the mass vaccination centre with 42
-staff members and the GP clinic with eight staff members. The
-interactive interface allows users to adjust the assumed arrival times,
-service times and available staff to reflect their own situation or
-assumptions. Queue performance is summarised in terms of total
-throughput, processing times and staff utilisation (Figure
-\ref{fig:shinyScreenshot}).
+accessing the applet in a web browser, the results from two default
+models are presented. These models have been parameterised to reflect
+the medium-sized baseline model presented here, i.e.~the mass
+vaccination centre with 42 staff members and the GP clinic with eight
+staff members. The interactive interface allows users to adjust the
+assumed arrival times, service times and available staff to reflect
+their own situation or assumptions. Queue performance is summarised in
+terms of total throughput, processing times and staff utilisation
+(Figure \ref{fig:shinyScreenshot}).
 
 \begin{figure}
 
@@ -921,7 +925,7 @@ throughput, processing times and staff utilisation (Figure
 \end{figure}
 
 The applet can be accessed at \url{https://cbdrh.shinyapps.io/queueSim}.
-The underlying source code is available on GitHub here:
+The underlying source code is available on GitHub at
 \url{https://github.com/CBDRH/vaccineQueueNetworks}. Planned extensions
 of this applet will allow users to download a summary of their specified
 assumptions and queue perfromance metrics, as well as the underlying
@@ -949,8 +953,8 @@ same time period. Put differently, one large mass vaccination hub can
 achieve the same coverage as 14 GP small vaccination clinics.
 
 These throughput estimates have reasonable face-validity. The mass
-vaccination hub trialled by NSW Health in a 2008 pandemic response
-planning exercise administered 498 vaccines in five hours using a mass
+vaccination hub trialled by NSW Health in a 2008 pandemic response field
+exercise administered 498 vaccines in five hours using a mass
 vaccination process delivered through a local
 school.\textsuperscript{12} The RPA Pfizer clinic has been delivering
 between 1,100 and 1,400 vaccinations per day throughout March 2021.
@@ -961,53 +965,57 @@ However, there are several other facets of the vaccine delivery process
 that are likely to offer economies-of-scale. For example, given a low
 incidence of adverse events, a high-capacity post-vaccination area
 observation area could be overseen by a single staff member.
-Economies-of-scale area are also likely to apply to vaccine delivery,
+Economies-of-scale are also likely to apply to vaccine transport,
 because it may be logistically more efficient and cost-effective to
 coordinate a single delivery to one centralised hub rather than multiple
-deliveries to numerous smaller clinics.
+deliveries to numerous smaller clinics, especially given that the
+cold-chain must be rigorously maintained at all stages of vaccine
+transport and handling.
 
 By stressing our baseline models, we have shown that mass vaccination
 hubs are better placed to scale up daily throughput with a fixed staff
 capacity while maintaining acceptable queue performance. We have also
 shown that mass vaccination hubs are also are more resilient to staff
-shortages.
+absences or some staff being redirected to other urgent duties.
 
 \hypertarget{policy-implications}{%
 \subsection{Policy implications}\label{policy-implications}}
 
 To date, the Australian Government's approach to vaccine delivery has
 relied on hospital hubs, private contractors and the Australian Defence
-Forces to administer the Pfizer Vaccine to the highest priority phase,
+Forces to administer the Pfizer vaccine to the highest priority phase,
 whereas delivery of subsequent phases is planned through smaller sites,
 including general practices, Aboriginal Controlled Community Health
 Services, and community pharmacies, to administer the AstraZeneca
-vaccine to the bulk of the Australian population. There has been little
-emphasis on the use of mass vaccination hubs to be included in
+vaccine to the bulk of the Australian population. To date there has been
+little emphasis on the use of mass vaccination hubs to be included in
 vaccination efforts, although previous pandemic planning exercises found
 this model to be effective,\textsuperscript{12} and mass vaccination
 sites have been implemented successfully in Australia (during Phase 1a
-of the COVID-19 vaccine roll-out) and overseas.\textsuperscript{17,18}
+of the COVID-19 vaccine roll-out) and overseas.\textsuperscript{18,19}
 
 Mass vaccination hubs and GP clinics offer distinct advantages as modes
 of vaccine delivery. As we have shown, mass vaccination hubs are more
-robust to increased throughput and staff shortages. Smaller GPs and CPs
-are more likely to be vulnerable to concomitant workplace demands, which
-fluctuate during the year and increase notably during the winter months.
-GPs have the advantage of existing infrastructure and existing
-relationships with patients. GPs are also highly flexible and can adapt
-to specific needs local circumstances and specific needs, as seen with
-carpark drive-through testing sites, which many practices set up during
-the COVID-19 pandemic.\textsuperscript{19} The optimal vaccination site
-may vary for different population segments. Older people or clinically
-vulnerable patients may benefit from attending their local GP who will
-be familiar with their medical history. Younger working adults may
-benefit from extended hours or more flexible appointment scheduling that
-could be offered by a mass vaccination hub. It may be easiest to reach
-university students, and in due course younger children, through
-vaccination hubs set up in campuses and schools.
+robust to increased throughput and staff shortages or absences. Smaller
+GPs and CPs are more likely to be vulnerable to concomitant, competing
+workplace demands, which fluctuate during the year and increase notably
+during the winter months. GPs have the advantage of existing
+infrastructure and existing relationships with patients. GPs are also
+highly flexible and can adapt to local circumstances and specific needs,
+as seen with carpark drive-through testing sites, which many practices
+helped set up during the COVID-19 pandemic.\textsuperscript{20} The
+optimal vaccination site may vary for different population segments.
+Older people or clinically vulnerable patients may benefit from
+attending their local GP who will be familiar with their medical
+history. Working adults may benefit from extended hours or more flexible
+appointment scheduling that could be offered by a mass vaccination hub,
+as may younger adults---especially among marginalised populations---who
+are less likely to have a regular GP.\textsuperscript{21} It may be
+easiest to reach university students, and in due course younger
+children, through vaccination hubs set up in campuses and schools.
 
-Expanding GP capacity to vaccinate and supporting practices to offer
-more flexible models for vaccination will assist in achieving
+Expanding GP capacity to vaccinate, and supporting practices to offer
+more flexible models for vaccination, will assist in achieving
 Australia's mass vaccination goals. Other vaccination delivery modes
 such as adapting drive-through mass testing sites should also be
 explored. A combination of expanded mass vaccination hubs and expanded
@@ -1141,34 +1149,46 @@ Management, The}. 2011;26(1):47-53.
 13. Bhat UN. \emph{An Introduction to Queueing Theory: Modeling and
 Analysis in Applications}. Birkhäuser; 2015.
 
-\leavevmode\hypertarget{ref-ebert2017computationally}{}%
+\leavevmode\hypertarget{ref-queuecomputer2020}{}%
 14. Ebert A, Wu P, Mengersen K, Ruggeri F. Computationally efficient
-simulation of queues: The r package queuecomputer. \emph{arXiv preprint
-arXiv:170302151}. Published online 2017.
+simulation of queues: The R package queuecomputer. \emph{Journal of
+Statistical Software}. 2020;95(5):1-29.
+doi:\href{https://doi.org/10.18637/jss.v095.i05}{10.18637/jss.v095.i05}
+
+\leavevmode\hypertarget{ref-little1961proof}{}%
+15. Little JD. A proof for the queuing formula: L= \(\lambda\) w.
+\emph{Operations research}. 1961;9(3):383-387.
 
 \leavevmode\hypertarget{ref-R-base}{}%
-15. R Core Team. \emph{R: A Language and Environment for Statistical
+16. R Core Team. \emph{R: A Language and Environment for Statistical
 Computing}. R Foundation for Statistical Computing; 2020.
 \url{https://www.R-project.org/}
 
 \leavevmode\hypertarget{ref-tidyverse2019}{}%
-16. Wickham H, Averick M, Bryan J, et al. Welcome to the tidyverse.
+17. Wickham H, Averick M, Bryan J, et al. Welcome to the tidyverse.
 \emph{Journal of Open Source Software}. 2019;4(43):1686.
 doi:\href{https://doi.org/10.21105/joss.01686}{10.21105/joss.01686}
 
 \leavevmode\hypertarget{ref-baraniuk2021covid}{}%
-17. Baraniuk C. Covid-19: How the UK vaccine rollout delivered success,
+18. Baraniuk C. Covid-19: How the UK vaccine rollout delivered success,
 so far. \emph{BMJ}. 2021;372.
 
 \leavevmode\hypertarget{ref-goralnick2021mass}{}%
-18. Goralnick E, Kaufmann C, Gawande AA. Mass-vaccination sites---an
+19. Goralnick E, Kaufmann C, Gawande AA. Mass-vaccination sites---an
 essential innovation to curb the covid-19 pandemic. \emph{New England
 Journal of Medicine}. Published online 2021.
 
 \leavevmode\hypertarget{ref-tanne2020covid}{}%
-19. Tanne JH, Hayasaki E, Zastrow M, Pulla P, Smith P, Rada AG.
+20. Tanne JH, Hayasaki E, Zastrow M, Pulla P, Smith P, Rada AG.
 Covid-19: How doctors and healthcare systems are tackling coronavirus
 worldwide. \emph{BMJ}. 2020;368.
+
+\leavevmode\hypertarget{ref-kang2020relationship}{}%
+21. Kang M, Robards F, Luscombe G, Sanci L, Usherwood T. The
+relationship between having a regular general practitioner (GP) and the
+experience of healthcare barriers: A cross-sectional study among young
+people in nsw, australia, with oversampling from marginalised groups.
+\emph{BMC family practice}. 2020;21(1):1-9.
 
 \bibliographystyle{unsrt}
 \bibliography{packages.bib}

@@ -503,7 +503,7 @@ ggpubr::ggarrange(p1, p2, ncol = 1, labels = c('A', 'B'), vjust = c(1.2, 0), hju
 
 As the arrival frequency increases, mean staff utilisation grows gradually. The shaded area indicates a staff utilisation factor between 0.5 and 0.7. Beyond this level, mean utilisation rapidly increases as arrivals increase. 
 
-These results emphasise the delicate balance between arrival frequency, mean staff utilisation and processing times. If arrivals are two low, processing times will be at an acceptable level but the available staff will be under-utilised. As arrivals increase, processing times and staff utilisation increase accordingly. However if the rate of arrivals grows too high, mean staff utilisation passes a critical threshold and processing times expand beyond reasonable levels. 
+These results emphasise the delicate balance between arrival frequency, mean staff utilisation and processing times. If arrivals are too low, processing times will be at an acceptable level but the available staff will be under-utilised. As arrivals increase, processing times and staff utilisation increase accordingly. However if the rate of arrivals grows too high, mean staff utilisation passes a critical threshold and processing times expand beyond reasonable levels. 
 
 Based on this calibration exercise, we specified the number of arrivals such that the median processing times remained under an hour, and the staff utilisation did not exceed 0.7 for any station. The chosen arrival frequencies that met this criteria are presented in Table \ref{tab:arrivalFreq}.
 

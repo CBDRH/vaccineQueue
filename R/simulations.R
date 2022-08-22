@@ -43,25 +43,25 @@ rpa21o <- list()
 
 for(i in 1:simN){
   ##  Delays in vaccination time
-  rpa21a[[i]] <- arenaModel(arrivals = arrivals(10, 60, 0, 5, 0.02), nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5)
-  rpa21b[[i]] <- arenaModel(arrivals = arrivals(35, 60, 0, 5, 0.02), nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5)
-  rpa21c[[i]] <- arenaModel(arrivals = arrivals(60, 60, 0, 5, 0.02), nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5)
-  rpa21d[[i]] <- arenaModel(arrivals = arrivals(85, 60, 0, 5, 0.02), nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5)
-  rpa21e[[i]] <- arenaModel(arrivals = arrivals(110, 60, 0, 5, 0.02), nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5)
+  rpa21a[[i]] <- arenaModel(arrivals = arrivals(10, 60, 0, 5, 0.02), duration = 8, nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5, nChairs = 25)
+  rpa21b[[i]] <- arenaModel(arrivals = arrivals(35, 60, 0, 5, 0.02), duration = 8, nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5, nChairs = 25)
+  rpa21c[[i]] <- arenaModel(arrivals = arrivals(60, 60, 0, 5, 0.02), duration = 8, nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5, nChairs = 25)
+  rpa21d[[i]] <- arenaModel(arrivals = arrivals(85, 60, 0, 5, 0.02), duration = 8, nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5, nChairs = 25)
+  rpa21e[[i]] <- arenaModel(arrivals = arrivals(110, 60, 0, 5, 0.02), duration = 8, nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5, nChairs = 25)
 
   ## Decreases in staff numbers
-  rpa21f[[i]] <- arenaModel(arrivals = arrivals(60, 60, 0, 5, 0.02), nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5)
-  rpa21g[[i]] <- arenaModel(arrivals = arrivals(60, 60, 0, 5, 0.02),  nRsi = 2, nEnt = 4, nReg = 5, nAss = 4, nVac = 5)
-  rpa21h[[i]] <- arenaModel(arrivals = arrivals(60, 60, 0, 5, 0.02),  nRsi = 2, nEnt = 4, nReg = 5, nAss = 4, nVac = 4)
-  rpa21i[[i]] <- arenaModel(arrivals = arrivals(60, 60, 0, 5, 0.02),  nRsi = 2, nEnt = 3, nReg = 5, nAss = 4, nVac = 4)
-  rpa21j[[i]] <- arenaModel(arrivals = arrivals(60, 60, 0, 5, 0.02),  nRsi = 2, nEnt = 3, nReg = 5, nAss = 3, nVac = 4)
+  rpa21f[[i]] <- arenaModel(arrivals = arrivals(60, 60, 0, 5, 0.02), duration = 8, nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5, nChairs = 25)
+  rpa21g[[i]] <- arenaModel(arrivals = arrivals(60, 60, 0, 5, 0.02), duration = 8,  nRsi = 2, nEnt = 4, nReg = 5, nAss = 4, nVac = 5, nChairs = 25)
+  rpa21h[[i]] <- arenaModel(arrivals = arrivals(60, 60, 0, 5, 0.02), duration = 8,  nRsi = 2, nEnt = 4, nReg = 5, nAss = 4, nVac = 4, nChairs = 25)
+  rpa21i[[i]] <- arenaModel(arrivals = arrivals(60, 60, 0, 5, 0.02), duration = 8,  nRsi = 2, nEnt = 3, nReg = 5, nAss = 4, nVac = 4, nChairs = 25)
+  rpa21j[[i]] <- arenaModel(arrivals = arrivals(60, 60, 0, 5, 0.02), duration = 8,  nRsi = 2, nEnt = 3, nReg = 5, nAss = 3, nVac = 4, nChairs = 25)
 
   ## increases in arrival rate
-  rpa21k[[i]] <- arenaModel(arrivals = arrivals(60+0, 60, 0, 5, 0.02), nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5)
-  rpa21l[[i]] <- arenaModel(arrivals = arrivals(60+10, 60, 0, 5, 0.02), nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5)
-  rpa21m[[i]] <- arenaModel(arrivals = arrivals(60+20, 60, 0, 5, 0.02), nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5)
-  rpa21n[[i]] <- arenaModel(arrivals = arrivals(60+30, 60, 0, 5, 0.02), nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5)
-  rpa21o[[i]] <- arenaModel(arrivals = arrivals(60+40, 60, 0, 5, 0.02), nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5)
+  rpa21k[[i]] <- arenaModel(arrivals = arrivals(60+0, 60, 0, 5, 0.02), duration = 8, nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5, nChairs = 25)
+  rpa21l[[i]] <- arenaModel(arrivals = arrivals(60+10, 60, 0, 5, 0.02), duration = 8, nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5, nChairs = 25)
+  rpa21m[[i]] <- arenaModel(arrivals = arrivals(60+20, 60, 0, 5, 0.02), duration = 8, nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5, nChairs = 25)
+  rpa21n[[i]] <- arenaModel(arrivals = arrivals(60+30, 60, 0, 5, 0.02), duration = 8, nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5, nChairs = 25)
+  rpa21o[[i]] <- arenaModel(arrivals = arrivals(60+40, 60, 0, 5, 0.02), duration = 8, nRsi = 2, nEnt = 4, nReg = 6, nAss = 4, nVac = 5, nChairs = 25)
 }
 
 
@@ -86,25 +86,25 @@ rpa42o <- list()
 for(i in 1:simN){
   
   ##  Delays in vaccination time 
-  rpa42a[[i]] <- arenaModel(arrivals = arrivals(20, 60, 0, 5, 0.02), nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10)
-  rpa42b[[i]] <- arenaModel(arrivals = arrivals(70, 60, 0, 5, 0.02), nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10)
-  rpa42c[[i]] <- arenaModel(arrivals = arrivals(120, 60, 0, 5, 0.02), nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10)
-  rpa42d[[i]] <- arenaModel(arrivals = arrivals(170, 60, 0, 5, 0.02), nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10)
-  rpa42e[[i]] <- arenaModel(arrivals = arrivals(220, 60, 0, 5, 0.02), nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10)
+  rpa42a[[i]] <- arenaModel(arrivals = arrivals(20, 60, 0, 5, 0.02), duration = 8, nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10, nChairs = 50)
+  rpa42b[[i]] <- arenaModel(arrivals = arrivals(70, 60, 0, 5, 0.02), duration = 8, nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10, nChairs = 50)
+  rpa42c[[i]] <- arenaModel(arrivals = arrivals(120, 60, 0, 5, 0.02), duration = 8, nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10, nChairs = 50)
+  rpa42d[[i]] <- arenaModel(arrivals = arrivals(170, 60, 0, 5, 0.02), duration = 8, nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10, nChairs = 50)
+  rpa42e[[i]] <- arenaModel(arrivals = arrivals(220, 60, 0, 5, 0.02), duration = 8, nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10, nChairs = 50)
 
   ## Decreases in staff numbers
-  rpa42f[[i]] <- arenaModel(arrivals = arrivals(120, 60, 0, 5, 0.02), nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10)
-  rpa42g[[i]] <- arenaModel(arrivals = arrivals(120, 60, 0, 5, 0.02), nRsi = 4, nEnt = 8, nReg = 11, nAss = 8, nVac = 10)
-  rpa42h[[i]] <- arenaModel(arrivals = arrivals(120, 60, 0, 5, 0.02), nRsi = 4, nEnt = 8, nReg = 11, nAss = 8, nVac = 9)
-  rpa42i[[i]] <- arenaModel(arrivals = arrivals(120, 60, 0, 5, 0.02), nRsi = 4, nEnt = 7, nReg = 11, nAss = 8, nVac = 9)
-  rpa42j[[i]] <- arenaModel(arrivals = arrivals(120, 60, 0, 5, 0.02), nRsi = 4, nEnt = 7, nReg = 11, nAss = 7, nVac = 9)
+  rpa42f[[i]] <- arenaModel(arrivals = arrivals(120, 60, 0, 5, 0.02), duration = 8, nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10, nChairs = 50)
+  rpa42g[[i]] <- arenaModel(arrivals = arrivals(120, 60, 0, 5, 0.02), duration = 8, nRsi = 4, nEnt = 8, nReg = 11, nAss = 8, nVac = 10, nChairs = 50)
+  rpa42h[[i]] <- arenaModel(arrivals = arrivals(120, 60, 0, 5, 0.02), duration = 8, nRsi = 4, nEnt = 8, nReg = 11, nAss = 8, nVac = 9, nChairs = 50)
+  rpa42i[[i]] <- arenaModel(arrivals = arrivals(120, 60, 0, 5, 0.02), duration = 8, nRsi = 4, nEnt = 7, nReg = 11, nAss = 8, nVac = 9, nChairs = 50)
+  rpa42j[[i]] <- arenaModel(arrivals = arrivals(120, 60, 0, 5, 0.02), duration = 8, nRsi = 4, nEnt = 7, nReg = 11, nAss = 7, nVac = 9, nChairs = 50)
   
   ## increases in arrival rate
-  rpa42k[[i]] <- arenaModel(arrivals = arrivals(120+0, 60, 0, 5, 0.02), nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10)
-  rpa42l[[i]] <- arenaModel(arrivals = arrivals(120+10, 60, 0, 5, 0.02), nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10)
-  rpa42m[[i]] <- arenaModel(arrivals = arrivals(120+20, 60, 0, 5, 0.02), nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10)
-  rpa42n[[i]] <- arenaModel(arrivals = arrivals(120+30, 60, 0, 5, 0.02), nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10)
-  rpa42o[[i]] <- arenaModel(arrivals = arrivals(120+40, 60, 0, 5, 0.02), nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10)
+  rpa42k[[i]] <- arenaModel(arrivals = arrivals(120+0, 60, 0, 5, 0.02), duration = 8, nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10, nChairs = 50)
+  rpa42l[[i]] <- arenaModel(arrivals = arrivals(120+10, 60, 0, 5, 0.02), duration = 8, nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10, nChairs = 50)
+  rpa42m[[i]] <- arenaModel(arrivals = arrivals(120+20, 60, 0, 5, 0.02), duration = 8, nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10, nChairs = 50)
+  rpa42n[[i]] <- arenaModel(arrivals = arrivals(120+30, 60, 0, 5, 0.02), duration = 8, nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10, nChairs = 50)
+  rpa42o[[i]] <- arenaModel(arrivals = arrivals(120+40, 60, 0, 5, 0.02), duration = 8, nRsi = 4, nEnt = 8, nReg = 12, nAss = 8, nVac = 10, nChairs = 50)
 }
 
 
@@ -128,25 +128,25 @@ rpa63o <- list()
 
 for(i in 1:simN){
   ## Delays in vaccination time
-  rpa63a[[i]] <- arenaModel(arrivals = arrivals(60, 60, 0, 5, 0.02), nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15)
-  rpa63b[[i]] <- arenaModel(arrivals = arrivals(120, 60, 0, 5, 0.02), nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15)
-  rpa63c[[i]] <- arenaModel(arrivals = arrivals(180, 60, 0, 5, 0.02), nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15)
-  rpa63d[[i]] <- arenaModel(arrivals = arrivals(240, 60, 0, 5, 0.02), nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15)
-  rpa63e[[i]] <- arenaModel(arrivals = arrivals(300, 60, 0, 5, 0.02), nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15)
+  rpa63a[[i]] <- arenaModel(arrivals = arrivals(60, 60, 0, 5, 0.02), duration = 8, nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15, nChairs = 75)
+  rpa63b[[i]] <- arenaModel(arrivals = arrivals(120, 60, 0, 5, 0.02), duration = 8, nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15, nChairs = 75)
+  rpa63c[[i]] <- arenaModel(arrivals = arrivals(180, 60, 0, 5, 0.02), duration = 8, nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15, nChairs = 75)
+  rpa63d[[i]] <- arenaModel(arrivals = arrivals(240, 60, 0, 5, 0.02), duration = 8, nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15, nChairs = 75)
+  rpa63e[[i]] <- arenaModel(arrivals = arrivals(300, 60, 0, 5, 0.02), duration = 8, nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15, nChairs = 75)
   
   ## Decreases in staff numbers
-  rpa63f[[i]] <- arenaModel(arrivals = arrivals(180, 60, 0, 5, 0.02), nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15)
-  rpa63g[[i]] <- arenaModel(arrivals = arrivals(180, 60, 0, 5, 0.02), nRsi = 6, nEnt = 12, nReg = 17, nAss = 12, nVac = 15)
-  rpa63h[[i]] <- arenaModel(arrivals = arrivals(180, 60, 0, 5, 0.02), nRsi = 6, nEnt = 12, nReg = 17, nAss = 12, nVac = 14)
-  rpa63i[[i]] <- arenaModel(arrivals = arrivals(180, 60, 0, 5, 0.02), nRsi = 5, nEnt = 11, nReg = 17, nAss = 12, nVac = 14)
-  rpa63j[[i]] <- arenaModel(arrivals = arrivals(180, 60, 0, 5, 0.02), nRsi = 5, nEnt = 11, nReg = 17, nAss = 11, nVac = 14)
+  rpa63f[[i]] <- arenaModel(arrivals = arrivals(180, 60, 0, 5, 0.02), duration = 8, nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15, nChairs = 75)
+  rpa63g[[i]] <- arenaModel(arrivals = arrivals(180, 60, 0, 5, 0.02), duration = 8, nRsi = 6, nEnt = 12, nReg = 17, nAss = 12, nVac = 15, nChairs = 75)
+  rpa63h[[i]] <- arenaModel(arrivals = arrivals(180, 60, 0, 5, 0.02), duration = 8, nRsi = 6, nEnt = 12, nReg = 17, nAss = 12, nVac = 14, nChairs = 75)
+  rpa63i[[i]] <- arenaModel(arrivals = arrivals(180, 60, 0, 5, 0.02), duration = 8, nRsi = 5, nEnt = 11, nReg = 17, nAss = 12, nVac = 14, nChairs = 75)
+  rpa63j[[i]] <- arenaModel(arrivals = arrivals(180, 60, 0, 5, 0.02), duration = 8, nRsi = 5, nEnt = 11, nReg = 17, nAss = 11, nVac = 14, nChairs = 75)
   
   ## increases in arrival rate
-  rpa63k[[i]] <- arenaModel(arrivals = arrivals(180+0, 60, 0, 5, 0.02), nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15)
-  rpa63l[[i]] <- arenaModel(arrivals = arrivals(180+10, 60, 0, 5, 0.02), nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15)
-  rpa63m[[i]] <- arenaModel(arrivals = arrivals(180+20, 60, 0, 5, 0.02), nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15)
-  rpa63n[[i]] <- arenaModel(arrivals = arrivals(180+30, 60, 0, 5, 0.02), nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15)
-  rpa63o[[i]] <- arenaModel(arrivals = arrivals(180+40, 60, 0, 5, 0.02), nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15)
+  rpa63k[[i]] <- arenaModel(arrivals = arrivals(180+0, 60, 0, 5, 0.02), duration = 8, nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15, nChairs = 75)
+  rpa63l[[i]] <- arenaModel(arrivals = arrivals(180+10, 60, 0, 5, 0.02), duration = 8, nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15, nChairs = 75)
+  rpa63m[[i]] <- arenaModel(arrivals = arrivals(180+20, 60, 0, 5, 0.02), duration = 8, nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15, nChairs = 75)
+  rpa63n[[i]] <- arenaModel(arrivals = arrivals(180+30, 60, 0, 5, 0.02), duration = 8, nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15, nChairs = 75)
+  rpa63o[[i]] <- arenaModel(arrivals = arrivals(180+40, 60, 0, 5, 0.02), duration = 8, nRsi = 6, nEnt = 12, nReg = 18, nAss = 12, nVac = 15, nChairs = 75)
 }
 
 
@@ -216,25 +216,25 @@ gp4o <- list()
 
 for(i in 1:simN){
   ##  Delays in vaccination time
-  gp4a[[i]] <- gpModel(arrivals = arrivals(1, 10, -3, 1, 0.02), nRsi = 1, nReg = 1, nVac = 2)
-  gp4b[[i]] <- gpModel(arrivals = arrivals(2, 10, -3, 1, 0.02), nRsi = 1, nReg = 1, nVac = 2)
-  gp4c[[i]] <- gpModel(arrivals = arrivals(3, 10, -3, 1, 0.02), nRsi = 1, nReg = 1, nVac = 2)
-  gp4d[[i]] <- gpModel(arrivals = arrivals(4, 10, -3, 1, 0.02), nRsi = 1, nReg = 1, nVac = 2)
-  gp4e[[i]] <- gpModel(arrivals = arrivals(5, 10, -3, 1, 0.02), nRsi = 1, nReg = 1, nVac = 2)
+  gp4a[[i]] <- gpModel(arrivals = arrivals(1, 10, -3, 1, 0.02), duration = 8, nRsi = 1, nReg = 1, nVac = 2, nChairs = 5)
+  gp4b[[i]] <- gpModel(arrivals = arrivals(2, 10, -3, 1, 0.02), duration = 8, nRsi = 1, nReg = 1, nVac = 2, nChairs = 5)
+  gp4c[[i]] <- gpModel(arrivals = arrivals(3, 10, -3, 1, 0.02), duration = 8, nRsi = 1, nReg = 1, nVac = 2, nChairs = 5)
+  gp4d[[i]] <- gpModel(arrivals = arrivals(4, 10, -3, 1, 0.02), duration = 8, nRsi = 1, nReg = 1, nVac = 2, nChairs = 5)
+  gp4e[[i]] <- gpModel(arrivals = arrivals(5, 10, -3, 1, 0.02), duration = 8, nRsi = 1, nReg = 1, nVac = 2, nChairs = 5)
   
   ## Decreases in staff numbers
-  gp4f[[i]] <- gpModel(arrivals = arrivals(2, 10, -3, 1, 0.02), nRsi = 1, nReg = 1, nVac = 2)
-  gp4g[[i]] <- gpModel(arrivals = arrivals(2, 10, -3, 1, 0.02),  nRsi = 1, nReg = 1, nVac = 1)
-  gp4h[[i]] <- gpModel(arrivals = arrivals(2, 10, -3, 1, 0.02),  nRsi = 1, nReg = 1, nVac = 1)
-  gp4i[[i]] <- gpModel(arrivals = arrivals(2, 10, -3, 1, 0.02),  nRsi = 1, nReg = 1, nVac = 1)
-  gp4j[[i]] <- gpModel(arrivals = arrivals(2, 10, -3, 1, 0.02),  nRsi = 1, nReg = 1, nVac = 1)
+  gp4f[[i]] <- gpModel(arrivals = arrivals(2, 10, -3, 1, 0.02), duration = 8, nRsi = 1, nReg = 1, nVac = 2, nChairs = 5)
+  gp4g[[i]] <- gpModel(arrivals = arrivals(2, 10, -3, 1, 0.02), duration = 8,  nRsi = 1, nReg = 1, nVac = 1, nChairs = 5)
+  gp4h[[i]] <- gpModel(arrivals = arrivals(2, 10, -3, 1, 0.02), duration = 8,  nRsi = 1, nReg = 1, nVac = 1, nChairs = 5)
+  gp4i[[i]] <- gpModel(arrivals = arrivals(2, 10, -3, 1, 0.02), duration = 8,  nRsi = 1, nReg = 1, nVac = 1, nChairs = 5)
+  gp4j[[i]] <- gpModel(arrivals = arrivals(2, 10, -3, 1, 0.02), duration = 8,  nRsi = 1, nReg = 1, nVac = 1, nChairs = 5)
   
   ## increases in arrival rate
-  gp4k[[i]] <- gpModel(arrivals = arrivals(2+0, 10, -3, 1, 0.02), nRsi = 1, nReg = 1, nVac = 2)
-  gp4l[[i]] <- gpModel(arrivals = arrivals(2+1, 10, -3, 1, 0.02), nRsi = 1, nReg = 1, nVac = 2)
-  gp4m[[i]] <- gpModel(arrivals = arrivals(2+2, 10, -3, 1, 0.02), nRsi = 1, nReg = 1, nVac = 2)
-  gp4n[[i]] <- gpModel(arrivals = arrivals(2+3, 10, -3, 1, 0.02), nRsi = 1, nReg = 1, nVac = 2)
-  gp4o[[i]] <- gpModel(arrivals = arrivals(2+4, 10, -3, 1, 0.02), nRsi = 1, nReg = 1, nVac = 2)
+  gp4k[[i]] <- gpModel(arrivals = arrivals(2+0, 10, -3, 1, 0.02), duration = 8, nRsi = 1, nReg = 1, nVac = 2, nChairs = 5)
+  gp4l[[i]] <- gpModel(arrivals = arrivals(2+1, 10, -3, 1, 0.02), duration = 8, nRsi = 1, nReg = 1, nVac = 2, nChairs = 5)
+  gp4m[[i]] <- gpModel(arrivals = arrivals(2+2, 10, -3, 1, 0.02), duration = 8, nRsi = 1, nReg = 1, nVac = 2, nChairs = 5)
+  gp4n[[i]] <- gpModel(arrivals = arrivals(2+3, 10, -3, 1, 0.02), duration = 8, nRsi = 1, nReg = 1, nVac = 2, nChairs = 5)
+  gp4o[[i]] <- gpModel(arrivals = arrivals(2+4, 10, -3, 1, 0.02), duration = 8, nRsi = 1, nReg = 1, nVac = 2, nChairs = 5)
 }
 
 
@@ -259,25 +259,25 @@ gp8o <- list()
 for(i in 1:simN){
   
   ##  Delays in vaccination time 
-  gp8a[[i]] <- gpModel(arrivals = arrivals(1, 10, -3, 1, 0.02), nRsi = 2, nReg = 2, nVac = 4)
-  gp8b[[i]] <- gpModel(arrivals = arrivals(2, 10, -3, 1, 0.02), nRsi = 2, nReg = 2, nVac = 4)
-  gp8c[[i]] <- gpModel(arrivals = arrivals(4, 10, -3, 1, 0.02), nRsi = 2, nReg = 2, nVac = 4)
-  gp8d[[i]] <- gpModel(arrivals = arrivals(6, 10, -3, 1, 0.02), nRsi = 2, nReg = 2, nVac = 4)
-  gp8e[[i]] <- gpModel(arrivals = arrivals(10, 10, -3, 1, 0.02), nRsi = 2, nReg = 2, nVac = 4)
+  gp8a[[i]] <- gpModel(arrivals = arrivals(1, 10, -3, 1, 0.02), duration = 8, nRsi = 2, nReg = 2, nVac = 4, nChairs = 10)
+  gp8b[[i]] <- gpModel(arrivals = arrivals(2, 10, -3, 1, 0.02), duration = 8, nRsi = 2, nReg = 2, nVac = 4, nChairs = 10)
+  gp8c[[i]] <- gpModel(arrivals = arrivals(4, 10, -3, 1, 0.02), duration = 8, nRsi = 2, nReg = 2, nVac = 4, nChairs = 10)
+  gp8d[[i]] <- gpModel(arrivals = arrivals(6, 10, -3, 1, 0.02), duration = 8, nRsi = 2, nReg = 2, nVac = 4, nChairs = 10)
+  gp8e[[i]] <- gpModel(arrivals = arrivals(10, 10, -3, 1, 0.02), duration = 8, nRsi = 2, nReg = 2, nVac = 4, nChairs = 10)
   
   ## Decreases in staff numbers
-  gp8f[[i]] <- gpModel(arrivals = arrivals(4, 10, -3, 1, 0.02), nRsi = 2, nReg = 2, nVac = 4)
-  gp8g[[i]] <- gpModel(arrivals = arrivals(4, 10, -3, 1, 0.02), nRsi = 2, nReg = 2, nVac = 3)
-  gp8h[[i]] <- gpModel(arrivals = arrivals(4, 10, -3, 1, 0.02), nRsi = 1, nReg = 2, nVac = 3)
-  gp8i[[i]] <- gpModel(arrivals = arrivals(4, 10, -3, 1, 0.02), nRsi = 1, nReg = 1, nVac = 3)
-  gp8j[[i]] <- gpModel(arrivals = arrivals(4, 10, -3, 1, 0.02), nRsi = 1, nReg = 1, nVac = 2)
+  gp8f[[i]] <- gpModel(arrivals = arrivals(4, 10, -3, 1, 0.02), duration = 8, nRsi = 2, nReg = 2, nVac = 4, nChairs = 10)
+  gp8g[[i]] <- gpModel(arrivals = arrivals(4, 10, -3, 1, 0.02), duration = 8, nRsi = 2, nReg = 2, nVac = 3, nChairs = 10)
+  gp8h[[i]] <- gpModel(arrivals = arrivals(4, 10, -3, 1, 0.02), duration = 8, nRsi = 1, nReg = 2, nVac = 3, nChairs = 10)
+  gp8i[[i]] <- gpModel(arrivals = arrivals(4, 10, -3, 1, 0.02), duration = 8, nRsi = 1, nReg = 1, nVac = 3, nChairs = 10)
+  gp8j[[i]] <- gpModel(arrivals = arrivals(4, 10, -3, 1, 0.02), duration = 8, nRsi = 1, nReg = 1, nVac = 2, nChairs = 10)
   
   ## increases in arrival rate
-  gp8k[[i]] <- gpModel(arrivals = arrivals(4+0, 10, -3, 1, 0.02), nRsi = 2, nReg = 2, nVac = 4)
-  gp8l[[i]] <- gpModel(arrivals = arrivals(4+1, 10, -3, 1, 0.02), nRsi = 2, nReg = 2, nVac = 4)
-  gp8m[[i]] <- gpModel(arrivals = arrivals(4+2, 10, -3, 1, 0.02), nRsi = 2, nReg = 2, nVac = 4)
-  gp8n[[i]] <- gpModel(arrivals = arrivals(4+3, 10, -3, 1, 0.02), nRsi = 2, nReg = 2, nVac = 4)
-  gp8o[[i]] <- gpModel(arrivals = arrivals(4+4, 10, -3, 1, 0.02), nRsi = 2, nReg = 2, nVac = 4)
+  gp8k[[i]] <- gpModel(arrivals = arrivals(4+0, 10, -3, 1, 0.02), duration = 8, nRsi = 2, nReg = 2, nVac = 4, nChairs = 10)
+  gp8l[[i]] <- gpModel(arrivals = arrivals(4+1, 10, -3, 1, 0.02), duration = 8, nRsi = 2, nReg = 2, nVac = 4, nChairs = 10)
+  gp8m[[i]] <- gpModel(arrivals = arrivals(4+2, 10, -3, 1, 0.02), duration = 8, nRsi = 2, nReg = 2, nVac = 4, nChairs = 10)
+  gp8n[[i]] <- gpModel(arrivals = arrivals(4+3, 10, -3, 1, 0.02), duration = 8, nRsi = 2, nReg = 2, nVac = 4, nChairs = 10)
+  gp8o[[i]] <- gpModel(arrivals = arrivals(4+4, 10, -3, 1, 0.02), duration = 8, nRsi = 2, nReg = 2, nVac = 4, nChairs = 10)
 }
 
 
@@ -301,25 +301,25 @@ gp12o <- list()
 
 for(i in 1:simN){
   ## Delays in vaccination time
-  gp12a[[i]] <- gpModel(arrivals = arrivals(2, 10, -3, 1, 0.02), nRsi = 3, nReg = 3, nVac = 6)
-  gp12b[[i]] <- gpModel(arrivals = arrivals(4, 10, -3, 1, 0.02), nRsi = 3, nReg = 3, nVac = 6)
-  gp12c[[i]] <- gpModel(arrivals = arrivals(6, 10, -3, 1, 0.02), nRsi = 3, nReg = 3, nVac = 6)
-  gp12d[[i]] <- gpModel(arrivals = arrivals(8, 10, -3, 1, 0.02), nRsi = 3, nReg = 3, nVac = 6)
-  gp12e[[i]] <- gpModel(arrivals = arrivals(12, 10, -3, 1, 0.02), nRsi = 3, nReg = 3, nVac = 6)
+  gp12a[[i]] <- gpModel(arrivals = arrivals(2, 10, -3, 1, 0.02), duration = 8, nRsi = 3, nReg = 3, nVac = 6, nChairs = 15)
+  gp12b[[i]] <- gpModel(arrivals = arrivals(4, 10, -3, 1, 0.02), duration = 8, nRsi = 3, nReg = 3, nVac = 6, nChairs = 15)
+  gp12c[[i]] <- gpModel(arrivals = arrivals(6, 10, -3, 1, 0.02), duration = 8, nRsi = 3, nReg = 3, nVac = 6, nChairs = 15)
+  gp12d[[i]] <- gpModel(arrivals = arrivals(8, 10, -3, 1, 0.02), duration = 8, nRsi = 3, nReg = 3, nVac = 6, nChairs = 15)
+  gp12e[[i]] <- gpModel(arrivals = arrivals(12, 10, -3, 1, 0.02), duration = 8, nRsi = 3, nReg = 3, nVac = 6, nChairs = 15)
   
   ## Decreases in staff numbers
-  gp12f[[i]] <- gpModel(arrivals = arrivals(6, 10, -3, 1, 0.02), nRsi = 3, nReg = 3, nVac = 6)
-  gp12g[[i]] <- gpModel(arrivals = arrivals(6, 10, -3, 1, 0.02), nRsi = 3, nReg = 3, nVac = 5)
-  gp12h[[i]] <- gpModel(arrivals = arrivals(6, 10, -3, 1, 0.02), nRsi = 2, nReg = 3, nVac = 5)
-  gp12i[[i]] <- gpModel(arrivals = arrivals(6, 10, -3, 1, 0.02), nRsi = 2, nReg = 2, nVac = 4)
-  gp12j[[i]] <- gpModel(arrivals = arrivals(6, 10, -3, 1, 0.02), nRsi = 2, nReg = 2, nVac = 3)
+  gp12f[[i]] <- gpModel(arrivals = arrivals(6, 10, -3, 1, 0.02), duration = 8, nRsi = 3, nReg = 3, nVac = 6, nChairs = 15)
+  gp12g[[i]] <- gpModel(arrivals = arrivals(6, 10, -3, 1, 0.02), duration = 8, nRsi = 3, nReg = 3, nVac = 5, nChairs = 15)
+  gp12h[[i]] <- gpModel(arrivals = arrivals(6, 10, -3, 1, 0.02), duration = 8, nRsi = 2, nReg = 3, nVac = 5, nChairs = 15)
+  gp12i[[i]] <- gpModel(arrivals = arrivals(6, 10, -3, 1, 0.02), duration = 8, nRsi = 2, nReg = 2, nVac = 4, nChairs = 15)
+  gp12j[[i]] <- gpModel(arrivals = arrivals(6, 10, -3, 1, 0.02), duration = 8, nRsi = 2, nReg = 2, nVac = 3, nChairs = 15)
   
   ## increases in arrival rate
-  gp12k[[i]] <- gpModel(arrivals = arrivals(6+0, 10, -3, 1, 0.02), nRsi = 3, nReg = 3, nVac = 6)
-  gp12l[[i]] <- gpModel(arrivals = arrivals(6+1, 10, -3, 1, 0.02), nRsi = 3, nReg = 3, nVac = 6)
-  gp12m[[i]] <- gpModel(arrivals = arrivals(6+2, 10, -3, 1, 0.02), nRsi = 3, nReg = 3, nVac = 6)
-  gp12n[[i]] <- gpModel(arrivals = arrivals(6+3, 10, -3, 1, 0.02), nRsi = 3, nReg = 3, nVac = 6)
-  gp12o[[i]] <- gpModel(arrivals = arrivals(6+4, 10, -3, 1, 0.02), nRsi = 3, nReg = 3, nVac = 6)
+  gp12k[[i]] <- gpModel(arrivals = arrivals(6+0, 10, -3, 1, 0.02), duration = 8, nRsi = 3, nReg = 3, nVac = 6, nChairs = 15)
+  gp12l[[i]] <- gpModel(arrivals = arrivals(6+1, 10, -3, 1, 0.02), duration = 8, nRsi = 3, nReg = 3, nVac = 6, nChairs = 15)
+  gp12m[[i]] <- gpModel(arrivals = arrivals(6+2, 10, -3, 1, 0.02), duration = 8, nRsi = 3, nReg = 3, nVac = 6, nChairs = 15)
+  gp12n[[i]] <- gpModel(arrivals = arrivals(6+3, 10, -3, 1, 0.02), duration = 8, nRsi = 3, nReg = 3, nVac = 6, nChairs = 15)
+  gp12o[[i]] <- gpModel(arrivals = arrivals(6+4, 10, -3, 1, 0.02), duration = 8, nRsi = 3, nReg = 3, nVac = 6, nChairs = 15)
 }
 
 
